@@ -1,2 +1,14 @@
 msgid "test_str"
 msgstr "This is english"
+
+msgid "title"
+msgstr "Auction program"
+
+msgid "lang_change_btn"
+msgstr "Change language"
+
+msgid "lang_change_instr"
+msgstr "Please select a language:"
+
+msgid "close"
+msgstr "Close"

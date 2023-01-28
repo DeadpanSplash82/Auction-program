@@ -12,16 +12,17 @@ translation.install()
 def setup_window():
     global root
     global translation
+    _ = translation.gettext
     if root is not None:
         root.destroy()
     root = tk.Tk()
-    root.title("Auction program")
+    root.title(_("title"))
     root.geometry("400x400")
 
-    btn_language = tk.Button(root, text="Change language", command=ask_language)
+    btn_language = tk.Button(root, text=_("lang_change_btn"), command=ask_language)
     btn_language.pack()
 
-    lbl_test = tk.Label(root, text=translation.gettext("test_str"))
+    lbl_test = tk.Label(root, text=_("test_str"))
     lbl_test.pack()
 
 
@@ -39,12 +40,14 @@ def set_language(input_lang):
 
 def ask_language():
     popup = tk.Toplevel()
-    popup.title("Please select a language")
+    popup.title(translation.gettext("title"))
+    lbl_instruction = tk.Label(popup, text=translation.gettext("lang_change_instr"))
+    lbl_instruction.pack()
     btn_afrikaans = tk.Button(popup, text="Afrikaans", command=lambda:[set_language("af")])
     btn_afrikaans.pack()
     btn_english = tk.Button(popup, text="English", command=lambda:[set_language("en")])
     btn_english.pack()
-    btn_close = tk.Button(popup, text="Close", command=popup.destroy)
+    btn_close = tk.Button(popup, text=translation.gettext("close"), command=popup.destroy)
     btn_close.pack()
 
 
