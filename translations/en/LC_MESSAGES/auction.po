@@ -12,3 +12,6 @@ msgstr "Please select a language:"
 
 msgid "close"
 msgstr "Close"
+
+msgid "exit"
+msgstr "Exit"

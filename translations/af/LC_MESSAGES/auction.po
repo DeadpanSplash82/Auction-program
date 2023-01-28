@@ -12,3 +12,6 @@ msgstr "Kies asseblief 'n taal:"
 
 msgid "close"
 msgstr "Sluit"
+
+msgid "exit"
+msgstr "Verlaat"
