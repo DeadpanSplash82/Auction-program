@@ -10,6 +10,9 @@ msgstr "Taal"
 msgid "mnu_add_bidder"
 msgstr "Voeg bieer by"
 
+msgid "mnu_add_lot"
+msgstr "Voeg lot by"
+
 msgid "lang_change_instr"
 msgstr "Kies asseblief 'n taal:"
 
@@ -24,6 +27,18 @@ msgstr "Voeg bieer by"
 
 msgid "btn_add_mult_bidder"
 msgstr "Voeg verskeie bieers by"
+
+msgid "total_lots"
+msgstr "Totale aantal lotte: "
+
+msgid "new_lot"
+msgstr "Nuwe lot se naam:"
+
+msgid "btn_add_lot"
+msgstr "Voeg lot by"
+
+msgid "btn_add_mult_lot"
+msgstr "Voeg verskeie lotte by"
 
 msgid "close"
 msgstr "Sluit"

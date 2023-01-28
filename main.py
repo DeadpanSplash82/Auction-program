@@ -16,6 +16,7 @@ def add_menu():
     _ = translation.gettext
     mainmenu = Menu(root)
     mainmenu.add_command(label=_("mnu_add_bidder"), command=setup_add_bidders)
+    mainmenu.add_command(label=_("mnu_add_lot"), command=setup_add_lot)
     mainmenu.add_command(label=_("mnu_lang_change"), command=setup_language)
     mainmenu.add_command(label=_("exit"), command=root.destroy)
     root.config(menu=mainmenu)
@@ -98,7 +99,22 @@ def setup_add_bidders():
     btn_add.grid(row=3, column=0)
     btn_add_mult = tk.Button(root, text=_("btn_add_mult_bidder")).grid(row=3, column=3)
 
+def setup_add_lot():
+    clear_window()
+    global root
+    global translation
+    _ = translation.gettext
 
+    lbl_total_lots = tk.Label(root, text=_("total_lots")).grid(row=0, column=0)
+    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=2, column=0)
+    ent_new_lot = tk.Entry(root, width=20)
+    ent_new_lot.insert(0, "Enter lot")
+    ent_new_lot.grid(row=2, column=1)
+
+    btn_add = tk.Button(root, text=_("btn_add_lot"))
+    btn_add.focus_set()
+    btn_add.grid(row=3, column=0)
+    btn_add_mult = tk.Button(root, text=_("btn_add_mult_lot")).grid(row=3, column=3)
 
 def main():
     setup_main()
