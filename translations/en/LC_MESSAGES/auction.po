@@ -17,7 +17,7 @@ msgid "lang_change_instr"
 msgstr "Please select a language:"
 
 msgid "total_bidders"
-msgstr "Total number of bidders: "
+msgstr "Number of bidders: "
 
 msgid "new_name"
 msgstr "New bidder's name :"
@@ -29,7 +29,7 @@ msgid "btn_add_mult_bidder"
 msgstr "Add multiple bidders"
 
 msgid "total_lots"
-msgstr "Total number of lots: "
+msgstr "Number of lots: "
 
 msgid "new_lot"
 msgstr "New lot's name :"
@@ -39,6 +39,33 @@ msgstr "Add lot"
 
 msgid "btn_add_mult_lot"
 msgstr "Add multiple lots"
+
+msgid "mnu_auction"
+msgstr "Auction"
+
+msgid "current_lot"
+msgstr "Current lot: "
+
+msgid "current_bid"
+msgstr "Current bid: "
+
+msgid "from"
+msgstr "from "
+
+msgid "btn_new_bid"
+msgstr "New bid"
+
+msgid "btn_close_lot"
+msgstr "Close lot"
+
+msgid "btn_next_lot"
+msgstr "Next lot"
+
+msgid "btn_select_lot"
+msgstr "Select lot"
+
+msgid "end_goal"
+msgstr "End goal: "
 
 msgid "close"
 msgstr "Close"

@@ -17,7 +17,7 @@ msgid "lang_change_instr"
 msgstr "Kies asseblief 'n taal:"
 
 msgid "total_bidders"
-msgstr "Totale aantal bieers: "
+msgstr "Aantal bieers: "
 
 msgid "new_name"
 msgstr "Nuwe bieer se naam:"
@@ -29,7 +29,7 @@ msgid "btn_add_mult_bidder"
 msgstr "Voeg verskeie bieers by"
 
 msgid "total_lots"
-msgstr "Totale aantal lotte: "
+msgstr "Aantal lotte: "
 
 msgid "new_lot"
 msgstr "Nuwe lot se naam:"
@@ -39,6 +39,34 @@ msgstr "Voeg lot by"
 
 msgid "btn_add_mult_lot"
 msgstr "Voeg verskeie lotte by"
+
+msgid "mnu_auction"
+msgstr "Veiling"
+
+msgid "end_goal"
+msgstr "Einddoel: "
+
+msgid "current_lot"
+msgstr "Huidige lot: "
+
+msgid "current_bid"
+msgstr "Huidige bie: "
+
+msgid "from"
+msgstr "deur "
+
+msgid "btn_new_bid"
+msgstr "Nuwe bie"
+
+msgid "btn_close_lot"
+msgstr "Sluit lot"
+
+msgid "btn_next_lot"
+msgstr "Volgende lot"
+
+msgid "btn_select_lot"
+msgstr "Kies lot"
+
 
 msgid "close"
 msgstr "Sluit"
