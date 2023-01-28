@@ -4,8 +4,8 @@ msgstr "This is english"
 msgid "title"
 msgstr "Auction program"
 
-msgid "lang_change_btn"
-msgstr "Change language"
+msgid "mnu_lang_change"
+msgstr "Language"
 
 msgid "lang_change_instr"
 msgstr "Please select a language:"

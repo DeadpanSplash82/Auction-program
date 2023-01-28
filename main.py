@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 import gettext
+import pandas as pd
 
 lang_changed = False
 root = None
@@ -10,10 +11,24 @@ translation = gettext.translation(
 translation.install()
 # _ = translation.gettext
 
+def add_menu():
+    global root
+    mainmenu = Menu(root)
+    mainmenu.add_command(label="Add bidders", command=add_bidders)
+    mainmenu.add_command(label=translation.gettext("mnu_lang_change"), command=ask_language)
+    mainmenu.add_command(label=translation.gettext("Exit"), command=root.destroy)
+    root.config(menu=mainmenu)
+
+def clear_window():
+    for widget in root.winfo_children():
+        widget.destroy()
+    add_menu()
+
 def setup_window():
     global root
     global translation
     _ = translation.gettext
+
     if root is not None:
         root.destroy()
     root = tk.Tk()
@@ -23,15 +38,11 @@ def setup_window():
     frame = Frame(root)
     frame.pack()
 
-    mainmenu = Menu(frame)
-    mainmenu.add_command(label=_("lang_change_btn"), command=ask_language)
-    mainmenu.add_command(label=_("exit"), command=root.destroy)
+    add_menu()
 
-    root.config(menu=mainmenu)
-
-    # btn_language = tk.Button(root, text=_(
-    #     "lang_change_btn"), command=ask_language)
-    # btn_language.pack()
+    btn_language = tk.Button(root, text=
+        "Change lang", command=ask_language)
+    btn_language.pack()
 
     lbl_test = tk.Label(root, text=_("test_str"))
     lbl_test.pack()
@@ -68,6 +79,9 @@ def ask_language():
     btn_close = tk.Button(popup, text=translation.gettext(
         "close"), command=popup.destroy)
     btn_close.pack()
+
+def add_bidders():
+    clear_window()
 
 
 def main():

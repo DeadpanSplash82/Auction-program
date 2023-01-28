@@ -4,8 +4,8 @@ msgstr "Die is afrikaans"
 msgid "title"
 msgstr "Veiling program"
 
-msgid "lang_change_btn"
-msgstr "Verander taal"
+msgid "mnu_lang_change"
+msgstr "Taal"
 
 msgid "lang_change_instr"
 msgstr "Kies asseblief 'n taal:"
