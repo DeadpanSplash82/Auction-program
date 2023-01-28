@@ -7,8 +7,23 @@ msgstr "Veiling program"
 msgid "mnu_lang_change"
 msgstr "Taal"
 
+msgid "mnu_add_bidder"
+msgstr "Voeg bieer by"
+
 msgid "lang_change_instr"
 msgstr "Kies asseblief 'n taal:"
+
+msgid "total_bidders"
+msgstr "Totale aantal bieers: "
+
+msgid "new_name"
+msgstr "Nuwe bieer se naam:"
+
+msgid "btn_add_bidder"
+msgstr "Voeg bieer by"
+
+msgid "btn_add_mult_bidder"
+msgstr "Voeg verskeie bieers by"
 
 msgid "close"
 msgstr "Sluit"

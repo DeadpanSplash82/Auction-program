@@ -13,10 +13,11 @@ translation.install()
 
 def add_menu():
     global root
+    _ = translation.gettext
     mainmenu = Menu(root)
-    mainmenu.add_command(label="Add bidders", command=add_bidders)
-    mainmenu.add_command(label=translation.gettext("mnu_lang_change"), command=ask_language)
-    mainmenu.add_command(label=translation.gettext("Exit"), command=root.destroy)
+    mainmenu.add_command(label=_("mnu_add_bidder"), command=setup_add_bidders)
+    mainmenu.add_command(label=_("mnu_lang_change"), command=setup_language)
+    mainmenu.add_command(label=_("exit"), command=root.destroy)
     root.config(menu=mainmenu)
 
 def clear_window():
@@ -24,7 +25,7 @@ def clear_window():
         widget.destroy()
     add_menu()
 
-def setup_window():
+def setup_main():
     global root
     global translation
     _ = translation.gettext
@@ -41,7 +42,7 @@ def setup_window():
     add_menu()
 
     btn_language = tk.Button(root, text=
-        "Change lang", command=ask_language)
+        "Change lang", command=setup_language)
     btn_language.pack()
 
     lbl_test = tk.Label(root, text=_("test_str"))
@@ -57,10 +58,10 @@ def set_language(input_lang):
     translation = gettext.translation(
         'auction', localedir='translations', languages=[lang])
     translation.install()
-    setup_window()
+    setup_main()
 
 
-def ask_language():
+def setup_language():
     popup = tk.Toplevel()
     popup.title(translation.gettext("title"))
     popup.geometry("150x150")
@@ -80,14 +81,28 @@ def ask_language():
         "close"), command=popup.destroy)
     btn_close.pack()
 
-def add_bidders():
+def setup_add_bidders():
     clear_window()
+    global root
+    global translation
+    _ = translation.gettext
+
+    lbl_total_bidders = tk.Label(root, text=_("total_bidders")).grid(row=0, column=0)
+    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=2, column=0)
+    ent_new_name = tk.Entry(root, width=20)
+    ent_new_name.insert(0, "Enter name")
+    ent_new_name.grid(row=2, column=1)
+
+    btn_add = tk.Button(root, text=_("btn_add_bidder"))
+    btn_add.focus_set()
+    btn_add.grid(row=3, column=0)
+    btn_add_mult = tk.Button(root, text=_("btn_add_mult_bidder")).grid(row=3, column=3)
+
 
 
 def main():
-    setup_window()
+    setup_main()
     global root
-
     root.mainloop()
 
 

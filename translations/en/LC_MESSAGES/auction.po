@@ -7,8 +7,23 @@ msgstr "Auction program"
 msgid "mnu_lang_change"
 msgstr "Language"
 
+msgid "mnu_add_bidder"
+msgstr "Add bidder"
+
 msgid "lang_change_instr"
 msgstr "Please select a language:"
+
+msgid "total_bidders"
+msgstr "Total number of bidders: "
+
+msgid "new_name"
+msgstr "New bidder's name :"
+
+msgid "btn_add_bidder"
+msgstr "Add bidder"
+
+msgid "btn_add_mult_bidder"
+msgstr "Add multiple bidders"
 
 msgid "close"
 msgstr "Close"
