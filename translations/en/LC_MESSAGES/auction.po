@@ -1,0 +1,2 @@
+msgid "test_str"
+msgstr "This is english"

@@ -1,0 +1,2 @@
+msgid "test_str"
+msgstr "Die is afrikaans"
