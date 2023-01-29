@@ -67,9 +67,17 @@ msgstr "Volgende lot"
 msgid "btn_select_lot"
 msgstr "Kies lot"
 
-
 msgid "close"
 msgstr "Sluit"
+
+msgid "close_confirm"
+msgstr "Is jy seker jy wil die program verlaat?"
+
+msgid "yes"
+msgstr "Ja"
+
+msgid "no"
+msgstr "Nee"
 
 msgid "exit"
 msgstr "Verlaat"

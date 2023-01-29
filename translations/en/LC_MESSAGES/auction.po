@@ -70,5 +70,14 @@ msgstr "End goal: "
 msgid "close"
 msgstr "Close"
 
+msgid "close_confirm"
+msgstr "Are you sure you want to close the program?"
+
+msgid "yes"
+msgstr "Yes"
+
+msgid "no"
+msgstr "No"
+
 msgid "exit"
 msgstr "Exit"

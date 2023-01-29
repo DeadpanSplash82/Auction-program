@@ -5,11 +5,13 @@ import pandas as pd
 
 lang_changed = False
 root = None
+return_value = False
 
 translation = gettext.translation(
     'auction', localedir='translations', languages=['en'])
 translation.install()
 # _ = translation.gettext
+
 
 def add_menu():
     global root
@@ -19,13 +21,26 @@ def add_menu():
     mainmenu.add_command(label=_("mnu_add_bidder"), command=setup_add_bidders)
     mainmenu.add_command(label=_("mnu_add_lot"), command=setup_add_lot)
     mainmenu.add_command(label=_("mnu_lang_change"), command=setup_language)
-    mainmenu.add_command(label=_("exit"), command=root.destroy)
+    mainmenu.add_command(label=_("exit"), command=confirm_close)
     root.config(menu=mainmenu)
+
 
 def clear_window():
     for widget in root.winfo_children():
         widget.destroy()
     add_menu()
+
+
+def close_window():
+    global root
+    global return_value
+    if return_value:
+        root.destroy()
+
+
+def confirm_close():
+    confirmation_box(translation.gettext("close_confirm"))
+
 
 def setup_main():
     global root
@@ -44,13 +59,36 @@ def setup_main():
     add_menu()
 
     setup_auction()
-    # btn_language = tk.Button(root, text=
-    #     "Change lang", command=setup_language)
-    # btn_language.pack()
 
-    # lbl_test = tk.Label(root, text=_("test_str"))
-    # lbl_test.pack()
 
+def confirmation_box(message, title="Confirmation"):
+    global root
+    global translation
+    global return_value
+    _ = translation.gettext
+
+    return_value = False
+
+    def set_return_value(val):
+        global return_value
+        return_value = val
+        close_window()
+
+    popup = tk.Toplevel()
+    popup.title(title)
+    popup.geometry("300x100")
+
+    lbl_image = Label(popup, image="::tk::icons::warning")
+    lbl_image.grid(row=0, column=0)
+    lbl_message = Label(popup, text=message)
+    lbl_message.grid(row=0, column=1, columnspan=3)
+
+    btn_yes = Button(popup, text=_("yes"),
+                     command=lambda:[set_return_value(True)], width=10)
+    btn_yes.grid(row=1, column=1)
+    btn_no = Button(popup, text=_("no"),
+                    command=lambda:[set_return_value(False), popup.destroy()], width=10)
+    btn_no.grid(row=1, column=2)
 
 def set_language(input_lang):
     global translation
@@ -84,13 +122,15 @@ def setup_language():
         "close"), command=popup.destroy)
     btn_close.pack()
 
+
 def setup_add_bidders():
     clear_window()
     global root
     global translation
     _ = translation.gettext
 
-    lbl_total_bidders = tk.Label(root, text=_("total_bidders")).grid(row=0, column=0)
+    lbl_total_bidders = tk.Label(root, text=_(
+        "total_bidders")).grid(row=0, column=0)
     lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=2, column=0)
     ent_new_name = tk.Entry(root, width=20)
     ent_new_name.insert(0, "Enter name")
@@ -99,7 +139,9 @@ def setup_add_bidders():
     btn_add = tk.Button(root, text=_("btn_add_bidder"))
     btn_add.focus_set()
     btn_add.grid(row=3, column=0)
-    btn_add_mult = tk.Button(root, text=_("btn_add_mult_bidder")).grid(row=3, column=3)
+    btn_add_mult = tk.Button(root, text=_(
+        "btn_add_mult_bidder")).grid(row=3, column=3)
+
 
 def setup_add_lot():
     clear_window()
@@ -116,7 +158,9 @@ def setup_add_lot():
     btn_add = tk.Button(root, text=_("btn_add_lot"))
     btn_add.focus_set()
     btn_add.grid(row=3, column=0)
-    btn_add_mult = tk.Button(root, text=_("btn_add_mult_lot")).grid(row=3, column=3)
+    btn_add_mult = tk.Button(root, text=_(
+        "btn_add_mult_lot")).grid(row=3, column=3)
+
 
 def setup_auction():
     clear_window()
@@ -124,41 +168,53 @@ def setup_auction():
     global translation
     _ = translation.gettext
 
-    frm_header=Frame(root,width=300,height=150)
+    frm_header = Frame(root, width=300, height=150)
     frm_header.pack(fill=BOTH)
 
-    lbl_total_bidders_label = tk.Label(frm_header, text=_("total_bidders")).grid(row=0, column=0)
-    lbl_total_bidders_value = tk.Label(frm_header, text="12").grid(row=0, column=1)
-    lbl_total_lots_label = tk.Label(frm_header, text=_("total_lots")).grid(row=0, column=2)
-    lbl_total_lots_value = tk.Label(frm_header, text="15").grid(row=0, column=3)
-    lbl_end_goal_label = tk.Label(frm_header, text=_("end_goal")).grid(row=0, column=4)
-    lbl_end_goal_value = tk.Label(frm_header, text="R150 000").grid(row=0, column=5)
+    lbl_total_bidders_label = tk.Label(
+        frm_header, text=_("total_bidders")).grid(row=0, column=0)
+    lbl_total_bidders_value = tk.Label(
+        frm_header, text="12").grid(row=0, column=1)
+    lbl_total_lots_label = tk.Label(
+        frm_header, text=_("total_lots")).grid(row=0, column=2)
+    lbl_total_lots_value = tk.Label(
+        frm_header, text="15").grid(row=0, column=3)
+    lbl_end_goal_label = tk.Label(
+        frm_header, text=_("end_goal")).grid(row=0, column=4)
+    lbl_end_goal_value = tk.Label(
+        frm_header, text="R150 000").grid(row=0, column=5)
 
-    frm_current_info=Frame(root,width=300,height=250)
+    frm_current_info = Frame(root, width=300, height=250)
     frm_current_info.pack(fill=BOTH)
 
-    lbl_current_lot_label = tk.Label(frm_current_info, text=_("current_lot")).grid(row=1, column=0)
-    lbl_current_lot_value = tk.Label(frm_current_info, text="current_lot").grid(row=1, column=1)
+    lbl_current_lot_label = tk.Label(
+        frm_current_info, text=_("current_lot")).grid(row=1, column=0)
+    lbl_current_lot_value = tk.Label(
+        frm_current_info, text="current_lot").grid(row=1, column=1)
 
-    lbl_current_bid_label = tk.Label(frm_current_info, text=_("current_bid")).grid(row=2, column=0)
-    lbl_current_bid_value = tk.Label(frm_current_info, text="curr_amount " ).grid(row=2, column=1)
-    lbl_current_bidder_label = tk.Label(frm_current_info, text=_("from")).grid(row=2, column=2)
-    lbl_current_bidder_value = tk.Label(frm_current_info, text= "curr_bidder").grid(row=2, column=3)
+    lbl_current_bid_label = tk.Label(
+        frm_current_info, text=_("current_bid")).grid(row=2, column=0)
+    lbl_current_bid_value = tk.Label(
+        frm_current_info, text="curr_amount ").grid(row=2, column=1)
+    lbl_current_bidder_label = tk.Label(
+        frm_current_info, text=_("from")).grid(row=2, column=2)
+    lbl_current_bidder_value = tk.Label(
+        frm_current_info, text="curr_bidder").grid(row=2, column=3)
 
-    frm_graph=Frame(root,width=300,height=300)
-    frm_graph.pack(expand = True, fill=BOTH)
+    frm_graph = Frame(root, width=300, height=300)
+    frm_graph.pack(expand=True, fill=BOTH)
 
-    canvas = Canvas(frm_graph,bg='white', width = 300,height = 300)
- 
+    canvas = Canvas(frm_graph, bg='white', width=300, height=300)
+
     coordinates = 20, 50, 210, 230
     arc = canvas.create_arc(coordinates, start=0, extent=250, fill="blue")
     arc = canvas.create_arc(coordinates, start=250, extent=50, fill="red")
     arc = canvas.create_arc(coordinates, start=300, extent=60, fill="yellow")
-    
-    canvas.pack(expand = True, fill = BOTH)
 
-    frm_btns=Frame(root,width=300,height=100)
-    frm_btns.pack(expand = True, fill=BOTH)
+    canvas.pack(expand=True, fill=BOTH)
+
+    frm_btns = Frame(root, width=300, height=100)
+    frm_btns.pack(expand=True, fill=BOTH)
 
     btn_new_bid = tk.Button(frm_btns, text=_("btn_new_bid"))
     btn_new_bid.focus_set()
