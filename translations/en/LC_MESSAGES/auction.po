@@ -4,6 +4,18 @@ msgstr "This is english"
 msgid "title"
 msgstr "Auction program"
 
+msgid "file"
+msgstr "File"
+
+msgid "open_file"
+msgstr "Open File"
+
+msgid "save_file"
+msgstr "Save File"
+
+msgid "new_file"
+msgstr "New File"
+
 msgid "mnu_lang_change"
 msgstr "Language"
 

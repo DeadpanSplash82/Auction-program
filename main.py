@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 import gettext
+import pandas as pd
 # from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # import matplotlib.pyplot as plt
 
@@ -17,13 +18,25 @@ translation.install()
 def add_menu():
     global root
     _ = translation.gettext
-    mainmenu = Menu(root)
-    mainmenu.add_command(label=_("mnu_auction"), command=setup_auction)
-    mainmenu.add_command(label=_("mnu_add_bidder"), command=setup_add_bidders)
-    mainmenu.add_command(label=_("mnu_add_lot"), command=setup_add_lot)
-    mainmenu.add_command(label=_("mnu_lang_change"), command=setup_language)
-    mainmenu.add_command(label=_("exit"), command=confirm_close)
-    root.config(menu=mainmenu)
+    main_menu = Menu(root)
+
+    btn_file = Menubutton(main_menu)
+    menu_file = Menu(btn_file, tearoff=0)
+
+    menu_file.add_command(label=_("new_file"))
+    menu_file.add_command(label=_("save_file"))
+    menu_file.add_command(label=_("open_file"))
+
+    btn_file.config(menu=menu_file)
+    main_menu.add_cascade(label=_("file"), menu=menu_file)
+
+    main_menu.add_command(label=_("mnu_auction"), command=setup_auction)
+    main_menu.add_command(label=_("mnu_add_bidder"), command=setup_add_bidders)
+    main_menu.add_command(label=_("mnu_add_lot"), command=setup_add_lot)
+    main_menu.add_command(label=_("mnu_lang_change"), command=setup_language)
+    main_menu.add_command(label=_("exit"), command=confirm_close)
+
+    root.config(menu=main_menu)
 
 
 def clear_window():
