@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import *
 import gettext
-import pandas as pd
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# import matplotlib.pyplot as plt
 
 lang_changed = False
 root = None
@@ -201,8 +202,8 @@ def setup_auction():
     lbl_current_bidder_value = tk.Label(
         frm_current_info, text="curr_bidder").grid(row=2, column=3)
 
-    frm_graph = Frame(root, width=300, height=300)
-    frm_graph.pack(expand=True, fill=BOTH)
+    frm_graph = Frame(root, width=300, height=250)
+    frm_graph.pack(expand=False, fill=BOTH)
 
     canvas = Canvas(frm_graph, bg='white', width=300, height=300)
 
@@ -212,6 +213,19 @@ def setup_auction():
     arc = canvas.create_arc(coordinates, start=300, extent=60, fill="yellow")
 
     canvas.pack(expand=True, fill=BOTH)
+
+    # create figure and axis for the graph
+    # figure = plt.figure()
+    # axis = figure.add_subplot(111)
+
+    # plot some data on the axis
+    # x_data = [1, 2, 3, 4, 5]
+    # y_data = [2, 4, 6, 8, 10]
+    # axis.plot(x_data, y_data)
+
+    # create a FigureCanvasTkAgg to display the graph in the Tkinter window
+    # canvas = FigureCanvasTkAgg(figure, master=frm_graph)
+    # canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     frm_btns = Frame(root, width=300, height=100)
     frm_btns.pack(expand=True, fill=BOTH)
