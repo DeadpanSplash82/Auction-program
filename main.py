@@ -178,25 +178,57 @@ def setup_language():
     btn_close.pack()
 
 
+def add_bidder(name):
+    global current_auction
+    global translation
+    _ = translation.gettext
+
+    if name == "":
+        error_box("error_name_empty")
+        return
+    elif name == "Enter name":
+        error_box("error_name_default")
+        return
+    elif name in current_auction.Bidder:
+        error_box("error_name_exists")
+        return
+    
+    current_auction["Bidder"].append(name)
+    setup_add_bidders()
+
 def setup_add_bidders():
     clear_window()
     global root
     global translation
+    global current_auction
     _ = translation.gettext
 
-    lbl_total_bidders = tk.Label(root, text=_(
-        "total_bidders")).grid(row=0, column=0)
-    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=2, column=0)
+    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=1, column=0)
     ent_new_name = tk.Entry(root, width=20)
     ent_new_name.insert(0, "Enter name")
-    ent_new_name.grid(row=2, column=1)
+    ent_new_name.grid(row=1, column=1)
+    ent_new_name.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_bidder"))
+    btn_add = tk.Button(root, text=_("btn_add_bidder"), command=lambda: add_bidder(ent_new_name.get()))
     btn_add.focus_set()
-    btn_add.grid(row=3, column=0)
+    btn_add.grid(row=2, column=0)
     btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_bidder")).grid(row=3, column=3)
-
+        "btn_add_mult_bidder"))
+    btn_add_mult.grid(row=2, column=3)
+    
+    if current_auction.empty:
+        btn_add["state"] = "disabled"
+        btn_add_mult["state"] = "disabled"
+    else:
+        lbl_current_bidders = tk.Label(root, text="Current bidders ("+ (str(len(current_auction["Bidder"])) if not current_auction.empty else 0) +") :")
+        lbl_current_bidders.grid(row=3, column=0)
+        if len(current_auction["Bidder"]) > 0:
+            for i in range(len(current_auction["Bidder"])):
+                lbl_current_bidders = tk.Label(root, text=current_auction["Bidder"][i])
+                lbl_current_bidders.grid(row=4+i, column=0)
+        else:
+            lbl_current_bidders = tk.Label(root, text="None")
+            lbl_current_bidders.grid(row=4, column=0)
 
 def setup_add_lot():
     clear_window()
@@ -214,7 +246,8 @@ def setup_add_lot():
     btn_add.focus_set()
     btn_add.grid(row=3, column=0)
     btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_lot")).grid(row=3, column=3)
+        "btn_add_mult_lot"))
+    btn_add_mult.grid(row=3, column=3)
 
 
 def new_auction(confirmed=False, callback=None):
