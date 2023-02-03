@@ -458,15 +458,23 @@ def setup_auction():
     btn_new_bid = tk.Button(frm_btns, text=_("btn_new_bid"))
     btn_new_bid.focus_set()
     btn_new_bid.grid(row=0, column=0)
+    if current_lot == -1 or current_auction["Price"][current_lot] == 0:
+        btn_new_bid.config(state="disabled")
 
     btn_close_lot = tk.Button(frm_btns, text=_("btn_close_lot"))
     btn_close_lot.grid(row=0, column=1)
+    if current_lot == -1 or current_auction["Price"][current_lot] == 0:
+        btn_close_lot.config(state="disabled")
 
     btn_next_lot = tk.Button(frm_btns, text=_("btn_next_lot"))
     btn_next_lot.grid(row=0, column=2)
+    if current_lot == -1 or current_lot == len(current_auction["Lot"]) - 1:
+        btn_next_lot.config(state="disabled")
 
     btn_select_lot = tk.Button(frm_btns, text=_("btn_select_lot"))
     btn_select_lot.grid(row=0, column=3)
+    if current_auction.empty or len(current_auction["Lot"]) == 0:
+        btn_select_lot.config(state="disabled")
 
 
 def main():
