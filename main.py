@@ -345,6 +345,7 @@ def open_file(confirmed = True):
     if not confirmed:
         return
     global current_auction
+    global current_lot
 
     # Call the open_file_dialog function and get the result
     try:
@@ -372,6 +373,8 @@ def open_file(confirmed = True):
         'Price': auction_bids['Price'].to_list()
     })
     # messagebox.showinfo("Open file", "File opened successfully")
+    if len(current_auction["Lot"]) > 0:
+        current_lot = 0
     setup_auction()
     # print (current_auction)
 
@@ -395,7 +398,6 @@ def setup_auction():
     _ = translation.gettext
 
     frm_header = Frame(root, width=300, height=150)
-    frm_header.pack(fill=BOTH)
 
     lbl_total_bidders_label = tk.Label(
         frm_header, text=_("total_bidders")).grid(row=0, column=0)
@@ -411,7 +413,6 @@ def setup_auction():
         frm_header, text=("R" + str(current_auction["Goal"])) if not current_auction.empty else "R0").grid(row=0, column=5)
 
     frm_current_info = Frame(root, width=300, height=250)
-    frm_current_info.pack(fill=BOTH)
 
     lbl_current_lot_label = tk.Label(
         frm_current_info, text=_("current_lot")).grid(row=1, column=0)
@@ -428,7 +429,6 @@ def setup_auction():
         frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else "none").grid(row=2, column=3)
 
     frm_graph = Frame(root, width=300, height=250)
-    frm_graph.pack(expand=False, fill=BOTH)
 
     canvas = Canvas(frm_graph, bg='white', width=300, height=300)
 
@@ -451,9 +451,10 @@ def setup_auction():
     # create a FigureCanvasTkAgg to display the graph in the Tkinter window
     # canvas = FigureCanvasTkAgg(figure, master=frm_graph)
     # canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+    
+    lbl_no_auction = tk.Label(root, text="Please open an auction file or create a new one.")
 
     frm_btns = Frame(root, width=300, height=100)
-    frm_btns.pack(expand=True, fill=BOTH)
 
     btn_new_bid = tk.Button(frm_btns, text=_("btn_new_bid"))
     btn_new_bid.focus_set()
@@ -475,6 +476,14 @@ def setup_auction():
     btn_select_lot.grid(row=0, column=3)
     if current_auction.empty or len(current_auction["Lot"]) == 0:
         btn_select_lot.config(state="disabled")
+
+    if not current_auction.empty:
+        frm_header.pack(fill=BOTH)
+        frm_current_info.pack(fill=BOTH)
+        frm_graph.pack(expand=False, fill=BOTH)
+        frm_btns.pack(expand=True, fill=BOTH)
+    else:
+        lbl_no_auction.pack()
 
 
 def main():
