@@ -220,10 +220,11 @@ def setup_add_lot():
 def new_auction(confirmed=False, callback=None):
     if (confirmed and callback is not None):
         callback()
-    if not confirmed:
-        return
     global current_auction
     global translation
+    global current_lot
+    global current_bidder
+    global current_bid
     _ = translation.gettext
 
     auction_name = None
@@ -255,6 +256,9 @@ def new_auction(confirmed=False, callback=None):
         'Winner': [],
         'Price': []
     })
+    current_lot = -1
+    current_bidder = -1
+    current_bid = -1
     setup_auction()
 
 
