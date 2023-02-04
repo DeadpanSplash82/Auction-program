@@ -12,6 +12,7 @@ import re
 # from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # import matplotlib.pyplot as plt
 
+####Global setup#######################################################################################################
 lang_changed = False
 root = None
 current_auction = pd.Series({})
@@ -145,6 +146,7 @@ def confirmation_box(message, callback1=None, callback2=None, title="Confirmatio
         btn_second.grid(row=1, column=2)
 
 
+###Language settings##################################################################################################
 def set_language(input_lang):
     global translation
     if input_lang == "en":
@@ -177,124 +179,7 @@ def setup_language():
         "close"), command=popup.destroy)
     btn_close.pack()
 
-
-def add_bidder(name):
-    global current_auction
-    global translation
-    _ = translation.gettext
-
-    if name == "":
-        error_box("error_name_empty")
-        return
-    elif name == "Enter name":
-        error_box("error_name_default")
-        return
-    elif name in current_auction.Bidder:
-        error_box("error_name_exists")
-        return
-    
-    current_auction["Bidder"].append(name)
-    setup_add_bidders()
-
-def setup_add_bidders():
-    clear_window()
-    global root
-    global translation
-    global current_auction
-    _ = translation.gettext
-
-    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=1, column=0)
-    ent_new_name = tk.Entry(root, width=20)
-    ent_new_name.insert(0, "Enter name")
-    ent_new_name.grid(row=1, column=1)
-    ent_new_name.focus_set()
-
-    btn_add = tk.Button(root, text=_("btn_add_bidder"), command=lambda: add_bidder(ent_new_name.get()))
-    btn_add.focus_set()
-    btn_add.grid(row=2, column=0)
-    btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_bidder"))
-    btn_add_mult.grid(row=2, column=3)
-    
-    if current_auction.empty:
-        btn_add["state"] = "disabled"
-        btn_add_mult["state"] = "disabled"
-    else:
-        lbl_current_bidders = tk.Label(root, text="Current bidders ("+ (str(len(current_auction["Bidder"])) if not current_auction.empty else 0) +") :")
-        lbl_current_bidders.grid(row=3, column=0)
-        if len(current_auction["Bidder"]) > 0:
-            for i in range(len(current_auction["Bidder"])):
-                lbl_current_bidders = tk.Label(root, text=current_auction["Bidder"][i])
-                lbl_current_bidders.grid(row=4+i, column=0)
-        else:
-            lbl_current_bidders = tk.Label(root, text="None")
-            lbl_current_bidders.grid(row=4, column=0)
-
-def setup_add_lot():
-    clear_window()
-    global root
-    global translation
-    _ = translation.gettext
-
-    lbl_total_lots = tk.Label(root, text=_("total_lots")).grid(row=0, column=0)
-    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=2, column=0)
-    ent_new_lot = tk.Entry(root, width=20)
-    ent_new_lot.insert(0, "Enter lot")
-    ent_new_lot.grid(row=2, column=1)
-
-    btn_add = tk.Button(root, text=_("btn_add_lot"))
-    btn_add.focus_set()
-    btn_add.grid(row=3, column=0)
-    btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_lot"))
-    btn_add_mult.grid(row=3, column=3)
-
-
-def new_auction(confirmed=False, callback=None):
-    if (confirmed and callback is not None):
-        callback()
-    global current_auction
-    global translation
-    global current_lot
-    global current_bidder
-    global current_bid
-    _ = translation.gettext
-
-    auction_name = None
-    while True:
-        auction_name = simpledialog.askstring(
-            "new_auction", "Enter a new auction name", parent=root)
-        if auction_name is None:
-            return
-        if auction_name is not None or bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
-            break
-
-    goal = None
-    while True:
-        goal = simpledialog.askinteger(
-            "new_auction", "Enter a goal in R", parent=root)
-        if goal is not None:
-            break
-        else:
-            return
-
-    current_auction = pd.Series({
-        'Auction_Name': auction_name,
-        'Date': datetime.today().strftime('%Y-%m-%d'),
-        'Time': datetime.today().strftime('%H-%M-%S'),
-        'Goal': goal,
-        'Total': 0,
-        'Bidder': [],
-        'Lot': [],
-        'Winner': [],
-        'Price': []
-    })
-    current_lot = -1
-    current_bidder = -1
-    current_bid = -1
-    setup_auction()
-
-
+###File operations#####################################################################################################
 def save_file(confirmed=True, callback=None):
     if not confirmed and callback is not None:
         callback()
@@ -424,6 +309,128 @@ def new_file():
     else:
         new_auction(True)
 
+
+###Add bidder##########################################################################################################
+def add_bidder(name):
+    global current_auction
+    global translation
+    _ = translation.gettext
+
+    if name == "":
+        error_box("error_name_empty")
+        return
+    elif name == "Enter name":
+        error_box("error_name_default")
+        return
+    elif name in current_auction.Bidder:
+        error_box("error_name_exists")
+        return
+    
+    current_auction["Bidder"].append(name)
+    setup_add_bidders()
+
+def setup_add_bidders():
+    clear_window()
+    global root
+    global translation
+    global current_auction
+    _ = translation.gettext
+
+    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=1, column=0)
+    ent_new_name = tk.Entry(root, width=20)
+    ent_new_name.insert(0, "Enter name")
+    ent_new_name.grid(row=1, column=1)
+    ent_new_name.focus_set()
+
+    btn_add = tk.Button(root, text=_("btn_add_bidder"), command=lambda: add_bidder(ent_new_name.get()))
+    btn_add.focus_set()
+    btn_add.grid(row=2, column=0)
+    btn_add_mult = tk.Button(root, text=_(
+        "btn_add_mult_bidder"))
+    btn_add_mult.grid(row=2, column=3)
+    
+    if current_auction.empty:
+        btn_add["state"] = "disabled"
+        btn_add_mult["state"] = "disabled"
+    else:
+        lbl_current_bidders = tk.Label(root, text="Current bidders ("+ (str(len(current_auction["Bidder"])) if not current_auction.empty else 0) +") :")
+        lbl_current_bidders.grid(row=3, column=0)
+        if len(current_auction["Bidder"]) > 0:
+            for i in range(len(current_auction["Bidder"])):
+                lbl_current_bidders = tk.Label(root, text=current_auction["Bidder"][i])
+                lbl_current_bidders.grid(row=4+i, column=0)
+        else:
+            lbl_current_bidders = tk.Label(root, text="None")
+            lbl_current_bidders.grid(row=4, column=0)
+
+
+###Add lot#############################################################################################################
+def setup_add_lot():
+    clear_window()
+    global root
+    global translation
+    _ = translation.gettext
+
+    lbl_total_lots = tk.Label(root, text=_("total_lots")).grid(row=0, column=0)
+    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=2, column=0)
+    ent_new_lot = tk.Entry(root, width=20)
+    ent_new_lot.insert(0, "Enter lot")
+    ent_new_lot.grid(row=2, column=1)
+
+    btn_add = tk.Button(root, text=_("btn_add_lot"))
+    btn_add.focus_set()
+    btn_add.grid(row=3, column=0)
+    btn_add_mult = tk.Button(root, text=_(
+        "btn_add_mult_lot"))
+    btn_add_mult.grid(row=3, column=3)
+
+
+def new_auction(confirmed=False, callback=None):
+    if (confirmed and callback is not None):
+        callback()
+    global current_auction
+    global translation
+    global current_lot
+    global current_bidder
+    global current_bid
+    _ = translation.gettext
+
+    auction_name = None
+    while True:
+        auction_name = simpledialog.askstring(
+            "new_auction", "Enter a new auction name", parent=root)
+        if auction_name is None:
+            return
+        if auction_name is not None or bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
+            break
+
+    goal = None
+    while True:
+        goal = simpledialog.askinteger(
+            "new_auction", "Enter a goal in R", parent=root)
+        if goal is not None:
+            break
+        else:
+            return
+
+    current_auction = pd.Series({
+        'Auction_Name': auction_name,
+        'Date': datetime.today().strftime('%Y-%m-%d'),
+        'Time': datetime.today().strftime('%H-%M-%S'),
+        'Goal': goal,
+        'Total': 0,
+        'Bidder': [],
+        'Lot': [],
+        'Winner': [],
+        'Price': []
+    })
+    current_lot = -1
+    current_bidder = -1
+    current_bid = -1
+    setup_auction()
+
+
+###Auction#############################################################################################################
 def setup_auction():
     clear_window()
     global root
@@ -523,6 +530,7 @@ def setup_auction():
         lbl_no_auction.pack()
 
 
+###Main program##########################################################################################################
 def main():
     setup_main()
     global root
