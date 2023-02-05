@@ -410,24 +410,57 @@ def setup_add_bidders():
 
 
 ###Add lot#############################################################################################################
+def add_lot(name):
+    global current_auction
+    global translation
+    _ = translation.gettext
+
+    if name == "":
+        error_box("error_name_empty")
+        return
+    elif name == "Enter lot":
+        error_box("error_name_default")
+        return
+    elif name in current_auction.Lot:
+        error_box("error_name_exists")
+        return
+    
+    current_auction["Lot"].append(name)
+    setup_add_lot()
+
+
 def setup_add_lot():
     clear_window()
     global root
     global translation
     _ = translation.gettext
 
-    lbl_total_lots = tk.Label(root, text=_("total_lots")).grid(row=0, column=0)
-    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=2, column=0)
+    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=1, column=0)
     ent_new_lot = tk.Entry(root, width=20)
     ent_new_lot.insert(0, "Enter lot")
-    ent_new_lot.grid(row=2, column=1)
+    ent_new_lot.grid(row=1, column=1)
+    ent_new_lot.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_lot"))
+    btn_add = tk.Button(root, text=_("btn_add_lot"), command=lambda: add_lot(ent_new_lot.get()))
     btn_add.focus_set()
-    btn_add.grid(row=3, column=0)
+    btn_add.grid(row=2, column=0)
     btn_add_mult = tk.Button(root, text=_(
         "btn_add_mult_lot"))
-    btn_add_mult.grid(row=3, column=3)
+    btn_add_mult.grid(row=2, column=3)
+
+    if current_auction.empty:
+        btn_add["state"] = "disabled"
+        btn_add_mult["state"] = "disabled"
+    else:
+        lbl_current_lots = tk.Label(root, text="Current lots ("+ (str(len(current_auction["Lot"])) if not current_auction.empty else 0) +") :")
+        lbl_current_lots.grid(row=3, column=0)
+        if len(current_auction["Lot"]) > 0:
+            for i in range(len(current_auction["Lot"])):
+                lbl_current_lots = tk.Label(root, text=current_auction["Lot"][i])
+                lbl_current_lots.grid(row=4+i, column=0)
+        else:
+            lbl_current_lots = tk.Label(root, text="None")
+            lbl_current_lots.grid(row=4, column=0)
 
 
 ###Auction#############################################################################################################
