@@ -310,6 +310,51 @@ def new_file():
         new_auction(True)
 
 
+def new_auction(confirmed=False, callback=None):
+    if (confirmed and callback is not None):
+        callback()
+    global current_auction
+    global translation
+    global current_lot
+    global current_bidder
+    global current_bid
+    _ = translation.gettext
+
+    auction_name = None
+    while True:
+        auction_name = simpledialog.askstring(
+            "new_auction", "Enter a new auction name", parent=root)
+        if auction_name is None:
+            return
+        if auction_name is not None or bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
+            break
+
+    goal = None
+    while True:
+        goal = simpledialog.askinteger(
+            "new_auction", "Enter a goal in R", parent=root)
+        if goal is not None:
+            break
+        else:
+            return
+
+    current_auction = pd.Series({
+        'Auction_Name': auction_name,
+        'Date': datetime.today().strftime('%Y-%m-%d'),
+        'Time': datetime.today().strftime('%H-%M-%S'),
+        'Goal': goal,
+        'Total': 0,
+        'Bidder': [],
+        'Lot': [],
+        'Winner': [],
+        'Price': []
+    })
+    current_lot = -1
+    current_bidder = -1
+    current_bid = -1
+    setup_auction()
+
+
 ###Add bidder##########################################################################################################
 def add_bidder(name):
     global current_auction
@@ -383,51 +428,6 @@ def setup_add_lot():
     btn_add_mult = tk.Button(root, text=_(
         "btn_add_mult_lot"))
     btn_add_mult.grid(row=3, column=3)
-
-
-def new_auction(confirmed=False, callback=None):
-    if (confirmed and callback is not None):
-        callback()
-    global current_auction
-    global translation
-    global current_lot
-    global current_bidder
-    global current_bid
-    _ = translation.gettext
-
-    auction_name = None
-    while True:
-        auction_name = simpledialog.askstring(
-            "new_auction", "Enter a new auction name", parent=root)
-        if auction_name is None:
-            return
-        if auction_name is not None or bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
-            break
-
-    goal = None
-    while True:
-        goal = simpledialog.askinteger(
-            "new_auction", "Enter a goal in R", parent=root)
-        if goal is not None:
-            break
-        else:
-            return
-
-    current_auction = pd.Series({
-        'Auction_Name': auction_name,
-        'Date': datetime.today().strftime('%Y-%m-%d'),
-        'Time': datetime.today().strftime('%H-%M-%S'),
-        'Goal': goal,
-        'Total': 0,
-        'Bidder': [],
-        'Lot': [],
-        'Winner': [],
-        'Price': []
-    })
-    current_lot = -1
-    current_bidder = -1
-    current_bid = -1
-    setup_auction()
 
 
 ###Auction#############################################################################################################
