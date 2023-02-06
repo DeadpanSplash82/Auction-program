@@ -6,6 +6,7 @@ import gettext
 from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter import font
+from tkinter import ttk
 import pandas as pd
 from datetime import datetime
 import re
@@ -25,6 +26,10 @@ translation = gettext.translation(
 translation.install()
 # _ = translation.gettext
 
+class EButton(tk.Button):
+    def __init__(self, master=None, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+        self.bind("<Return>", lambda event: self.invoke())
 
 def add_menu():
     global root
@@ -98,7 +103,7 @@ def error_box(message, title="Error"):
     lbl_message = Label(popup, text=message)
     lbl_message.grid(row=0, column=1, columnspan=3)
 
-    btn_close = Button(popup, text=_("close"),
+    btn_close = EButton(popup, text=_("close"),
                        command=popup.destroy, width=10)
     btn_close.grid(row=1, column=1, columnspan=3)
 
@@ -137,11 +142,11 @@ def confirmation_box(message, callback1=None, callback2=None, title="Confirmatio
     # Set the .geometry property of the TopLevel object
     popup.geometry(f"{window_width}x{window_height}")
 
-    btn_first = Button(popup, text=button1,
+    btn_first = EButton(popup, text=button1,
                        command=lambda: [set_return_value(True, callback1, callback2), popup.destroy()], width=10)
     btn_first.grid(row=1, column=1)
     if button2 is not None:
-        btn_second = Button(popup, text=button2,
+        btn_second = EButton(popup, text=button2,
                             command=lambda: [set_return_value(False, callback1, callback2), popup.destroy()], width=10)
         btn_second.grid(row=1, column=2)
 
@@ -169,13 +174,13 @@ def setup_language():
     # new_lang = tk.StringVar()
     # rbtn_afrikaans = tk.Radiobutton(popup, text="Afrikaans", variable=new_lang, value="af", command=set_language(new_lang)).pack()
     # rbtn_english = tk.Radiobutton(popup, text="English", variable=new_lang, value="en", command=set_language(new_lang)).pack()
-    btn_afrikaans = tk.Button(popup, text="Afrikaans",
+    btn_afrikaans = EButton(popup, text="Afrikaans",
                               command=lambda: [set_language("af")])
     btn_afrikaans.pack()
-    btn_english = tk.Button(popup, text="English",
+    btn_english = EButton(popup, text="English",
                             command=lambda: [set_language("en")])
     btn_english.pack()
-    btn_close = tk.Button(popup, text=translation.gettext(
+    btn_close = EButton(popup, text=translation.gettext(
         "close"), command=popup.destroy)
     btn_close.pack()
 
@@ -292,9 +297,9 @@ def open_file(confirmed=True):
         'Time': auction_info['Time'],
         'Goal': auction_info['Goal'],
         'Total': auction_info['Total'],
-        'Bidder': auction_bidders['Bidder'].to_list(),
+        'Bidder': auction_bidders['Bidder'].dropna().to_list(),
         'Lot': auction_lots['Lot'].dropna().to_list(),
-        'Winner': auction_lots['Winner'].dropna().to_list(),
+        'Winner': auction_lots['Winner'].fillna('').to_list(),
         'Price': auction_lots['Price'].dropna().to_list()
     })
 
@@ -427,11 +432,11 @@ def setup_add_bidders():
     ent_new_name.grid(row=1, column=1)
     ent_new_name.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_bidder"),
+    btn_add = EButton(root, text=_("btn_add_bidder"),
                         command=lambda: add_bidder(ent_new_name.get()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
-    btn_add_mult = tk.Button(root, text=_(
+    btn_add_mult = tk.EButton(root, text=_(
         "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get()))
     btn_add_mult.grid(row=2, column=3)
 
@@ -526,11 +531,11 @@ def setup_add_lot():
     ent_new_lot.grid(row=1, column=1)
     ent_new_lot.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_lot"),
+    btn_add = EButton(root, text=_("btn_add_lot"),
                         command=lambda: add_lot(ent_new_lot.get()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
-    btn_add_mult = tk.Button(root, text=_(
+    btn_add_mult = EButton(root, text=_(
         "btn_add_mult_lot"), command=lambda: add_multiple_lots(ent_new_lot.get()))
     btn_add_mult.grid(row=2, column=3)
 
@@ -552,6 +557,47 @@ def setup_add_lot():
 
 
 ###Auction#############################################################################################################
+def new_bid():
+    global current_auction
+    global translation
+    global current_bidder
+    global current_lot
+    global current_bid
+    _ = translation.gettext
+
+    popup = tk.Toplevel()
+    popup.title("Add bid")
+    popup.geometry("300x200")
+    popup.resizable(False, False)
+
+    lbl_bidder = tk.Label(popup, text="Select a bidder from the list below").grid(row=0, column=0)
+    cmb_bidders = ttk.Combobox(popup, values = current_auction["Bidder"], state="readonly")
+    cmb_bidders.set("Pick a Bidder")
+    cmb_bidders.grid(row=1, column=0)
+    cmb_bidders.focus_set()
+
+    lbl_bid = tk.Label(popup, text="Enter the bid amount:").grid(row=2, column=0)
+    ent_bid = tk.Entry(popup, width=20)
+    ent_bid.insert(0, "0")
+    ent_bid.grid(row=3, column=0)
+
+    btn_add = EButton(popup, text="Add bid")
+    btn_add.grid(row=4, column=0)
+
+
+def next_lot():
+    global current_auction
+    global translation
+    global current_lot
+    _ = translation.gettext
+
+    if current_lot < len(current_auction["Lot"])-1:
+        current_lot += 1
+    else:
+        current_lot = 0
+    setup_auction()
+
+
 def setup_auction():
     clear_window()
     global root
@@ -622,23 +668,23 @@ def setup_auction():
 
     frm_btns = Frame(root, width=300, height=100)
 
-    btn_new_bid = tk.Button(frm_btns, text=_("btn_new_bid"))
+    btn_new_bid = EButton(frm_btns, text=_("btn_new_bid"), command=new_bid)
     btn_new_bid.focus_set()
     btn_new_bid.grid(row=0, column=0)
     if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_new_bid.config(state="disabled")
 
-    btn_close_lot = tk.Button(frm_btns, text=_("btn_close_lot"))
+    btn_close_lot = EButton(frm_btns, text=_("btn_close_lot"))
     btn_close_lot.grid(row=0, column=1)
     if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_close_lot.config(state="disabled")
 
-    btn_next_lot = tk.Button(frm_btns, text=_("btn_next_lot"))
+    btn_next_lot = EButton(frm_btns, text=_("btn_next_lot"), command=next_lot)
     btn_next_lot.grid(row=0, column=2)
     if current_lot == -1 or current_lot == len(current_auction["Lot"]) - 1:
         btn_next_lot.config(state="disabled")
 
-    btn_select_lot = tk.Button(frm_btns, text=_("btn_select_lot"))
+    btn_select_lot = EButton(frm_btns, text=_("btn_select_lot"))
     btn_select_lot.grid(row=0, column=3)
     if current_auction.empty or len(current_auction["Lot"]) == 0:
         btn_select_lot.config(state="disabled")
