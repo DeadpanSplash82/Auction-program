@@ -565,11 +565,13 @@ def add_bid(amount, bidder):
     global current_bid
     _ = translation.gettext
 
+    try :
+        float(amount)
+    except ValueError:
+        error_box("error_amount_not_number")
+        return
     if amount == "":
         error_box("error_amount_empty")
-        return
-    elif amount.isdigit() == False:
-        error_box("error_amount_not_number")
         return
     elif float(amount) <= 0:
         error_box("error_amount_negative")
@@ -639,6 +641,36 @@ def next_lot():
     setup_auction()
 
 
+def close_lot():
+    global current_auction
+    global translation
+    global current_lot
+    global current_bid
+    global current_bidder
+    _ = translation.gettext
+
+    if current_lot < 0:
+        error_box("error_no_lot_selected")
+        return
+    elif current_lot >= len(current_auction["Lot"]):
+        error_box("error_lot_out_of_range")
+        return
+    elif current_bidder < 0:
+        error_box("error_no_bidder_selected")
+        return
+    elif current_bidder >= len(current_auction["Bidder"]):
+        error_box("error_bidder_out_of_range")
+        return
+    elif current_bid < 0:
+        error_box("error_no_bid_selected")
+        return
+
+    current_auction["Price"][current_lot] = current_bid
+    current_auction["Winner"][current_lot] = current_auction["Bidder"][current_bidder]
+    current_bid = -1
+    current_bidder = -1
+    next_lot()
+
 def setup_auction():
     clear_window()
     global root
@@ -666,8 +698,8 @@ def setup_auction():
 
     frm_current_info = Frame(root, width=300, height=250)
 
-    lbl_current_lot_label = tk.Label(
-        frm_current_info, text=_("current_lot")).grid(row=1, column=0)
+    lbl_current_lot_label = tk.Label(frm_current_info, text="current lot " + (("(" + str(current_lot+1) + "/" + str(len(current_auction["Lot"])) + ")") if not current_auction.empty else "") + ":")
+    lbl_current_lot_label.grid(row=1, column=0)
     lbl_current_lot_value = tk.Label(
         frm_current_info, text=current_auction["Lot"][current_lot] if current_lot != -1 else "None").grid(row=1, column=1)
 
@@ -715,9 +747,9 @@ def setup_auction():
     if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_new_bid.config(state="disabled")
 
-    btn_close_lot = EButton(frm_btns, text=_("btn_close_lot"))
+    btn_close_lot = EButton(frm_btns, text=_("btn_close_lot"), command=close_lot)
     btn_close_lot.grid(row=0, column=1)
-    if current_lot == -1 or current_auction["Winner"][current_lot] != "":
+    if current_lot == -1 or current_bid <=0:
         btn_close_lot.config(state="disabled")
 
     btn_next_lot = EButton(frm_btns, text=_("btn_next_lot"), command=next_lot)
