@@ -557,6 +557,47 @@ def setup_add_lot():
 
 
 ###Auction#############################################################################################################
+def add_bid(amount, bidder):
+    global current_auction
+    global translation
+    global current_bidder
+    global current_lot
+    global current_bid
+    _ = translation.gettext
+
+    if amount == "":
+        error_box("error_amount_empty")
+        return
+    elif amount.isdigit() == False:
+        error_box("error_amount_not_number")
+        return
+    elif float(amount) <= 0:
+        error_box("error_amount_negative")
+        return
+    elif bidder == "Pick a Bidder":
+        error_box("error_bidder_default")
+        return
+    elif bidder == -1:
+        error_box("error_bidder_empty")
+        return
+    elif bidder == "":
+        error_box("error_bidder_default")
+        return
+    elif current_lot < 0:
+        error_box("error_no_lot_selected")
+        return
+    elif current_lot >= len(current_auction["Lot"]):
+        error_box("error_lot_out_of_range")
+        return
+    elif float(amount) <= current_bid:
+        error_box("error_bid_too_low")
+        return
+    
+    current_bidder = bidder
+    current_bid = float(amount)
+    setup_auction()
+
+
 def new_bid():
     global current_auction
     global translation
@@ -581,7 +622,7 @@ def new_bid():
     ent_bid.insert(0, "0")
     ent_bid.grid(row=3, column=0)
 
-    btn_add = EButton(popup, text="Add bid")
+    btn_add = EButton(popup, text="Add bid", command=lambda: add_bid(ent_bid.get(), cmb_bidders.current()))
     btn_add.grid(row=4, column=0)
 
 
@@ -633,7 +674,7 @@ def setup_auction():
     lbl_current_bid_label = tk.Label(
         frm_current_info, text=_("current_bid")).grid(row=2, column=0)
     lbl_current_bid_value = tk.Label(
-        frm_current_info, text=current_auction["Bid"][current_bid] if current_bid != -1 else "None").grid(row=2, column=1)
+        frm_current_info, text= ("R "+ str(current_bid)) if current_bid > 0 else "None").grid(row=2, column=1)
     lbl_current_bidder_label = tk.Label(
         frm_current_info, text=_("from")).grid(row=2, column=2)
     lbl_current_bidder_value = tk.Label(
