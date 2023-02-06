@@ -120,7 +120,7 @@ def confirmation_box(message, callback1=None, callback2=None, title="Confirmatio
 
     popup = tk.Toplevel()
     popup.title(title)
-    
+
     lbl_image = Label(popup, image=icon)
     lbl_image.grid(row=0, column=0)
     lbl_message = Label(popup, text=message)
@@ -131,18 +131,18 @@ def confirmation_box(message, callback1=None, callback2=None, title="Confirmatio
     label_width = len(message) * font_size
 
     # Calculate the window width and height based on the label size
-    window_width = int(label_width /1.1)
+    window_width = int(label_width / 1.1)
     window_height = int(font_size * 10)
 
     # Set the .geometry property of the TopLevel object
     popup.geometry(f"{window_width}x{window_height}")
 
     btn_first = Button(popup, text=button1,
-                     command=lambda: [set_return_value(True, callback1, callback2), popup.destroy()], width=10)
+                       command=lambda: [set_return_value(True, callback1, callback2), popup.destroy()], width=10)
     btn_first.grid(row=1, column=1)
     if button2 is not None:
         btn_second = Button(popup, text=button2,
-                        command=lambda: [set_return_value(False, callback1, callback2), popup.destroy()], width=10)
+                            command=lambda: [set_return_value(False, callback1, callback2), popup.destroy()], width=10)
         btn_second.grid(row=1, column=2)
 
 
@@ -180,6 +180,8 @@ def setup_language():
     btn_close.pack()
 
 ###File operations#####################################################################################################
+
+
 def save_file(confirmed=True, callback=None):
     if not confirmed and callback is not None:
         callback()
@@ -221,7 +223,8 @@ def save_file(confirmed=True, callback=None):
     # Concatenate the DataFrames for the auction information and the bids along axis 0
     result_df = pd.concat([info_df, auction_df], axis=0)
 
-    file_name = current_auction["Auction_Name"] + " " + current_auction['Date'] + ".xlsx"
+    file_name = current_auction["Auction_Name"] + \
+        " " + current_auction['Date'] + ".xlsx"
     # Write the result DataFrame to an Excel file
     result_df.to_excel("out/" + file_name, index=False, )
 
@@ -248,14 +251,15 @@ def open_file_dialog():
         raise ValueError(f"An error occurred while reading the file: {e}")
 
     # Check if the file contains auction data
-    if result_df.shape[1] != 9 or result_df.shape[0] < 1 or result_df.columns[0] != 'Auction_Name' or result_df.columns[1] != 'Date' or result_df.columns[2] != 'Time' or result_df.columns[3] != 'Goal' or result_df.columns[4] != 'Total' or result_df.columns[5] != 'Bidder' or result_df.columns[6] != 'Lot' or result_df.columns[7] != 'Winner' or result_df.columns[8] != 'Price' :
+    if result_df.shape[1] != 9 or result_df.shape[0] < 1 or result_df.columns[0] != 'Auction_Name' or result_df.columns[1] != 'Date' or result_df.columns[2] != 'Time' or result_df.columns[3] != 'Goal' or result_df.columns[4] != 'Total' or result_df.columns[5] != 'Bidder' or result_df.columns[6] != 'Lot' or result_df.columns[7] != 'Winner' or result_df.columns[8] != 'Price':
         raise ValueError("The selected file does not contain auction data")
 
     return result_df
 
+
 def open_confirmation():
     global current_auction
-    print (current_auction.empty)
+    print(current_auction.empty)
     if not current_auction.empty:
         confirmation_box(
             "Would you like to save the current auction? All unsaved changes will be lost.", callback1=save_file, callback2=open_file)
@@ -263,7 +267,7 @@ def open_confirmation():
         open_file(True)
 
 
-def open_file(confirmed = True):
+def open_file(confirmed=True):
     if not confirmed:
         return
     global current_auction
@@ -289,7 +293,7 @@ def open_file(confirmed = True):
         'Time': auction_info['Time'],
         'Goal': auction_info['Goal'],
         'Total': auction_info['Total'],
-        'Bidder': auction_bids['Bidder'].to_list(),  
+        'Bidder': auction_bids['Bidder'].to_list(),
         'Lot': auction_bids['Lot'].to_list(),
         'Winner': auction_bids['Winner'].to_list(),
         'Price': auction_bids['Price'].to_list()
@@ -370,9 +374,42 @@ def add_bidder(name):
     elif name in current_auction.Bidder:
         error_box("error_name_exists")
         return
-    
+
     current_auction["Bidder"].append(name)
     setup_add_bidders()
+
+
+def add_multiple_bidders(base_name):
+    global current_auction
+    global translation
+    _ = translation.gettext
+
+    if base_name == "":
+        error_box("error_name_empty")
+        return
+    elif base_name == "Enter name":
+        error_box("error_name_default")
+        return
+
+    amount = None
+    while True:
+        amount = simpledialog.askinteger(
+            "Multiple bidders", "Enter the amount of bidders you would like to add. They will be named \"" + base_name +" [number]\" starting from number = " + str(len(current_auction["Bidder"])+1) , parent=root)
+        if amount is not None:
+            break
+        else:
+            return
+
+    for i in range(len(current_auction["Bidder"])+1, len(current_auction["Bidder"]) + amount + 1):
+        if base_name + " " + str(i) in current_auction.Bidder:
+            error_box("error name: \""+base_name + " " + str(i)+"\" exists")
+            return
+    
+    for i in range(len(current_auction["Bidder"])+1, len(current_auction["Bidder"]) + amount + 1):
+        current_auction["Bidder"].append(base_name + " " + str(i))
+    
+    setup_add_bidders()
+
 
 def setup_add_bidders():
     clear_window()
@@ -387,22 +424,25 @@ def setup_add_bidders():
     ent_new_name.grid(row=1, column=1)
     ent_new_name.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_bidder"), command=lambda: add_bidder(ent_new_name.get()))
+    btn_add = tk.Button(root, text=_("btn_add_bidder"),
+                        command=lambda: add_bidder(ent_new_name.get()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
     btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_bidder"))
+        "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get()))
     btn_add_mult.grid(row=2, column=3)
-    
+
     if current_auction.empty:
         btn_add["state"] = "disabled"
         btn_add_mult["state"] = "disabled"
     else:
-        lbl_current_bidders = tk.Label(root, text="Current bidders ("+ (str(len(current_auction["Bidder"])) if not current_auction.empty else 0) +") :")
+        lbl_current_bidders = tk.Label(root, text="Current bidders (" + (
+            str(len(current_auction["Bidder"])) if not current_auction.empty else 0) + ") :")
         lbl_current_bidders.grid(row=3, column=0)
         if len(current_auction["Bidder"]) > 0:
             for i in range(len(current_auction["Bidder"])):
-                lbl_current_bidders = tk.Label(root, text=current_auction["Bidder"][i])
+                lbl_current_bidders = tk.Label(
+                    root, text=current_auction["Bidder"][i])
                 lbl_current_bidders.grid(row=4+i, column=0)
         else:
             lbl_current_bidders = tk.Label(root, text="None")
@@ -424,7 +464,7 @@ def add_lot(name):
     elif name in current_auction.Lot:
         error_box("error_name_exists")
         return
-    
+
     current_auction["Lot"].append(name)
     setup_add_lot()
 
@@ -441,7 +481,8 @@ def setup_add_lot():
     ent_new_lot.grid(row=1, column=1)
     ent_new_lot.focus_set()
 
-    btn_add = tk.Button(root, text=_("btn_add_lot"), command=lambda: add_lot(ent_new_lot.get()))
+    btn_add = tk.Button(root, text=_("btn_add_lot"),
+                        command=lambda: add_lot(ent_new_lot.get()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
     btn_add_mult = tk.Button(root, text=_(
@@ -452,11 +493,13 @@ def setup_add_lot():
         btn_add["state"] = "disabled"
         btn_add_mult["state"] = "disabled"
     else:
-        lbl_current_lots = tk.Label(root, text="Current lots ("+ (str(len(current_auction["Lot"])) if not current_auction.empty else 0) +") :")
+        lbl_current_lots = tk.Label(root, text="Current lots (" + (
+            str(len(current_auction["Lot"])) if not current_auction.empty else 0) + ") :")
         lbl_current_lots.grid(row=3, column=0)
         if len(current_auction["Lot"]) > 0:
             for i in range(len(current_auction["Lot"])):
-                lbl_current_lots = tk.Label(root, text=current_auction["Lot"][i])
+                lbl_current_lots = tk.Label(
+                    root, text=current_auction["Lot"][i])
                 lbl_current_lots.grid(row=4+i, column=0)
         else:
             lbl_current_lots = tk.Label(root, text="None")
@@ -528,8 +571,9 @@ def setup_auction():
     # create a FigureCanvasTkAgg to display the graph in the Tkinter window
     # canvas = FigureCanvasTkAgg(figure, master=frm_graph)
     # canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-    
-    lbl_no_auction = tk.Label(root, text="Please open an auction file or create a new one.")
+
+    lbl_no_auction = tk.Label(
+        root, text="Please open an auction file or create a new one.")
 
     frm_btns = Frame(root, width=300, height=100)
 
