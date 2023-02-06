@@ -282,7 +282,8 @@ def open_file(confirmed=True):
 
     # Extract the information from the DataFrame
     auction_info = result_df.iloc[0, :]
-    auction_bids = result_df.iloc[1:, :]
+    auction_bidders = result_df.iloc[1:, [5]]
+    auction_lots = result_df.iloc[1:, 6:]
 
     # Create a Series with the auction information
     current_auction = pd.Series({
@@ -291,10 +292,10 @@ def open_file(confirmed=True):
         'Time': auction_info['Time'],
         'Goal': auction_info['Goal'],
         'Total': auction_info['Total'],
-        'Bidder': auction_bids['Bidder'].to_list(),
-        'Lot': auction_bids['Lot'].to_list(),
-        'Winner': auction_bids['Winner'].to_list(),
-        'Price': auction_bids['Price'].to_list()
+        'Bidder': auction_bidders['Bidder'].to_list(),
+        'Lot': auction_lots['Lot'].dropna().to_list(),
+        'Winner': auction_lots['Winner'].dropna().to_list(),
+        'Price': auction_lots['Price'].dropna().to_list()
     })
 
     if len(current_auction["Lot"]) > 0:
