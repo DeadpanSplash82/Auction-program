@@ -179,9 +179,8 @@ def setup_language():
         "close"), command=popup.destroy)
     btn_close.pack()
 
+
 ###File operations#####################################################################################################
-
-
 def save_file(confirmed=True, callback=None):
     if not confirmed and callback is not None:
         callback()
@@ -453,6 +452,7 @@ def setup_add_bidders():
 def add_lot(name):
     global current_auction
     global translation
+    global current_lot
     _ = translation.gettext
 
     if name == "":
@@ -466,6 +466,47 @@ def add_lot(name):
         return
 
     current_auction["Lot"].append(name)
+    current_auction["Price"].append(0)
+    current_auction["Winner"].append("")
+    if current_lot < 0:
+        current_lot = 0
+    setup_add_lot()
+
+
+def add_multiple_lots(base_name):
+    global current_auction
+    global translation
+    global current_lot
+    _ = translation.gettext
+
+    if base_name == "":
+        error_box("error_name_empty")
+        return
+    elif base_name == "Enter lot":
+        error_box("error_name_default")
+        return
+
+    amount = None
+    while True:
+        amount = simpledialog.askinteger(
+            "Multiple lots", "Enter the amount of lots you would like to add. They will be named \"" + base_name +" [number]\" starting from number = " + str(len(current_auction["Lot"])+1) , parent=root)
+        if amount is not None:
+            break
+        else:
+            return
+
+    for i in range(len(current_auction["Lot"])+1, len(current_auction["Lot"]) + amount + 1):
+        if base_name + " " + str(i) in current_auction.Lot:
+            error_box("error name: \""+base_name + " " + str(i)+"\" exists")
+            return
+    
+    for i in range(len(current_auction["Lot"])+1, len(current_auction["Lot"]) + amount + 1):
+        current_auction["Lot"].append(base_name + " " + str(i))
+        current_auction["Price"].append(0)
+        current_auction["Winner"].append("")
+
+    if current_lot < 0:
+        current_lot = 0
     setup_add_lot()
 
 
@@ -486,7 +527,7 @@ def setup_add_lot():
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
     btn_add_mult = tk.Button(root, text=_(
-        "btn_add_mult_lot"))
+        "btn_add_mult_lot"), command=lambda: add_multiple_lots(ent_new_lot.get()))
     btn_add_mult.grid(row=2, column=3)
 
     if current_auction.empty:
@@ -580,12 +621,12 @@ def setup_auction():
     btn_new_bid = tk.Button(frm_btns, text=_("btn_new_bid"))
     btn_new_bid.focus_set()
     btn_new_bid.grid(row=0, column=0)
-    if current_lot == -1 or current_auction["Price"][current_lot] == 0:
+    if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_new_bid.config(state="disabled")
 
     btn_close_lot = tk.Button(frm_btns, text=_("btn_close_lot"))
     btn_close_lot.grid(row=0, column=1)
-    if current_lot == -1 or current_auction["Price"][current_lot] == 0:
+    if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_close_lot.config(state="disabled")
 
     btn_next_lot = tk.Button(frm_btns, text=_("btn_next_lot"))
