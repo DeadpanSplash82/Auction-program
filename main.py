@@ -16,6 +16,7 @@ import re
 ####Global setup#######################################################################################################
 lang_changed = False
 root = None
+file_path = ""
 current_auction = pd.Series({})
 current_lot = -1
 current_bidder = -1
@@ -194,6 +195,7 @@ def save_file(confirmed=True, callback=None):
     if not confirmed:
         return
     global current_auction
+    global file_path
 
     if current_auction.empty:
         messagebox.showerror("Error", "No auction to save")
@@ -229,7 +231,8 @@ def save_file(confirmed=True, callback=None):
     # Concatenate the DataFrames for the auction information and the bids along axis 0
     result_df = pd.concat([info_df, auction_df], axis=0)
 
-    file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[
+    if file_path == '':
+        file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[
                                              ("Excel Files", "*.xlsx"), ("All Files", "*.*")])
 
     # Write the result DataFrame to an Excel file
@@ -242,18 +245,20 @@ def save_file(confirmed=True, callback=None):
 
 def open_file_dialog():
     # Open a file dialog and get the file path
-    file_path = filedialog.askopenfilename()
+    global file_path
 
-    if file_path == '':
+    entered_path = filedialog.askopenfilename()
+
+    if entered_path == '':
         raise NameError("No file selected")
 
     # Check if the file is an Excel file
-    if not file_path.endswith('.xlsx'):
+    if not entered_path.endswith('.xlsx'):
         raise ValueError("The selected file is not an Excel file")
 
     try:
         # Read the file and return the result
-        result_df = pd.read_excel(file_path)
+        result_df = pd.read_excel(entered_path)
     except Exception as e:
         raise ValueError(f"An error occurred while reading the file: {e}")
 
@@ -261,6 +266,7 @@ def open_file_dialog():
     if result_df.shape[1] != 9 or result_df.shape[0] < 1 or result_df.columns[0] != 'Auction_Name' or result_df.columns[1] != 'Date' or result_df.columns[2] != 'Time' or result_df.columns[3] != 'Goal' or result_df.columns[4] != 'Total' or result_df.columns[5] != 'Bidder' or result_df.columns[6] != 'Lot' or result_df.columns[7] != 'Winner' or result_df.columns[8] != 'Price':
         raise ValueError("The selected file does not contain auction data")
 
+    file_path = entered_path
     return result_df
 
 
