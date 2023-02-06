@@ -222,10 +222,10 @@ def save_file(confirmed=True, callback=None):
     # Concatenate the DataFrames for the auction information and the bids along axis 0
     result_df = pd.concat([info_df, auction_df], axis=0)
 
-    file_name = current_auction["Auction_Name"] + \
-        " " + current_auction['Date'] + ".xlsx"
+    file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel Files", "*.xlsx"), ("All Files", "*.*")])
+
     # Write the result DataFrame to an Excel file
-    result_df.to_excel("out/" + file_name, index=False, )
+    result_df.to_excel(file_path, index=False,)
 
     messagebox.showinfo("Save file", "File saved successfully")
     if callback is not None:
@@ -303,7 +303,7 @@ def open_file(confirmed=True):
             i += 1
         current_lot = i
     else:
-        current_lot = 0
+        current_lot = -1
     setup_auction()
 
 
