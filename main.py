@@ -258,7 +258,6 @@ def open_file_dialog():
 
 def open_confirmation():
     global current_auction
-    print(current_auction.empty)
     if not current_auction.empty:
         confirmation_box(
             "Would you like to save the current auction? All unsaved changes will be lost.", callback1=save_file, callback2=open_file)
@@ -297,11 +296,15 @@ def open_file(confirmed=True):
         'Winner': auction_bids['Winner'].to_list(),
         'Price': auction_bids['Price'].to_list()
     })
-    # messagebox.showinfo("Open file", "File opened successfully")
+
     if len(current_auction["Lot"]) > 0:
+        i = 0
+        while current_auction["Winner"][i] != "" and i < len(current_auction["Lot"])-1:
+            i += 1
+        current_lot = i
+    else:
         current_lot = 0
     setup_auction()
-    # print (current_auction)
 
 
 def new_file():
