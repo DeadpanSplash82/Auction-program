@@ -436,11 +436,11 @@ def setup_add_bidders():
     ent_new_name.focus_set()
 
     btn_add = EButton(root, text=_("btn_add_bidder"),
-                      command=lambda: add_bidder(ent_new_name.get()))
+                      command=lambda: add_bidder(ent_new_name.get().trim()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
     btn_add_mult = EButton(root, text=_(
-        "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get()))
+        "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get().trim()))
     btn_add_mult.grid(row=2, column=3)
 
     if current_auction.empty:
@@ -535,11 +535,11 @@ def setup_add_lot():
     ent_new_lot.focus_set()
 
     btn_add = EButton(root, text=_("btn_add_lot"),
-                      command=lambda: add_lot(ent_new_lot.get()))
+                      command=lambda: add_lot(ent_new_lot.get().trim()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
     btn_add_mult = EButton(root, text=_(
-        "btn_add_mult_lot"), command=lambda: add_multiple_lots(ent_new_lot.get()))
+        "btn_add_mult_lot"), command=lambda: add_multiple_lots(ent_new_lot.get().trim()))
     btn_add_mult.grid(row=2, column=3)
 
     if current_auction.empty:
