@@ -1,3 +1,4 @@
+#  msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po
 msgid "test_str"
 msgstr "Die is afrikaans"
 
@@ -76,7 +77,7 @@ msgstr "Sluit lot"
 msgid "btn_next_lot"
 msgstr "Volgende lot"
 
-msgid "btn_select_lot"
+msgid "select_lot"
 msgstr "Kies lot"
 
 msgid "close"
@@ -84,6 +85,141 @@ msgstr "Sluit"
 
 msgid "close_confirm"
 msgstr "Is jy seker jy wil die program verlaat?"
+
+msgid "confirmation"
+msgstr "Bevestiging"
+
+msgid "error"
+msgstr "Fout"
+
+msgid "err_no_auction"
+msgstr "Daar is geen veilingom te stoor nie"
+
+msgid "save_header"
+msgstr "Stoor veiling"
+
+msgid "save_success"
+msgstr "Veiling is suksesvol gestoor"
+
+msgid "err_no_file"
+msgstr "Daar is geen leer gekies om te oop te maak nie"
+
+msgid "err_wrong_format"
+msgstr "Die gekose leer is nie Excel leer nie"
+
+msgid "err_reading"
+msgstr "Daar was 'n probleem met die lees van die leer"
+
+msgid "err_no_auction_data"
+msgstr "Die gekose leer bevat geen veiling data nie"
+
+msgid "save_confirmation"
+msgstr "Wil jy die huidige veilig stoor? Enige ongestoorde data sal verlore gaan."
+
+msgid "new_auction"
+msgstr "Nuwe veiling"
+
+msgid "new_auction_name"
+msgstr "Nuwe veiling se naam"
+
+msgid "new_auction_goal"
+msgstr "Nuwe veilig se einddoel in R"
+
+msgid "err_name_empty"
+msgstr "Die naam mag nie leeg wees nie"
+
+msgid "err_name_default"
+msgstr "Die naam mag nie die standaard naam wees nie"
+
+msgid "err_name_exists"
+msgstr "Die naam bestaan reeds"
+
+msgid "mult_bidders_header"
+msgstr "Voeg verskeie bieers by"
+
+msgid "mult_bidders_instr1"
+msgstr "Hoeveel bieers wil jy byvoeg? Hulle sal as volg benoem word \""
+
+msgid "mult_bidders_instr2"
+msgstr " [nommer]\" beginnende by nommer = "
+
+msgid "err_name_exists1"
+msgstr "Fout. Naam: \""
+
+msgid "err_name_exists2"
+msgstr "\" bestaan reeds"
+
+msgid "curr_bidders"
+msgstr "Huidige bieers "
+
+msgid "none"
+msgstr "Geen"
+
+msgid "mult_lots_header"
+msgstr "Voeg verskeie lotte by"
+
+msgid "mult_lots_instr1"
+msgstr "Hoeveel lotte wil jy byvoeg? Hulle sal as volg benoem word \""
+
+msgid "mult_lots_instr2"
+msgstr " [nommer]\" beginnende by nommer = "
+
+msgid "curr_lots"
+msgstr "Huidige lotte "
+
+msgid "err_nan"
+msgstr "Fout. Die waarde moet 'n getal wees"
+
+msgid "err_no_amount"
+msgstr "Fout. Geen bedrag ingevoer nie"
+
+msgid "err_neg_amount"
+msgstr "Fout. Negatiewe bedrag ingevoer"
+
+msgid "err_no_bidder"
+msgstr "Fout. Geen bieer gekies nie"
+
+msgid "err_no_lot"
+msgstr "Fout. Geen lot gekies nie"
+
+msgid "err_out_of_range"
+msgstr "Fout. Die lot is buite die bereik van die veiling"
+
+msgid "err_bid_too_low"
+msgstr "Fout. Die bie is te laag"
+
+msgid "select_bidder_from_list"
+msgstr "Kies 'n bieer van die lys"
+
+msgid "select_bidder"
+msgstr "Kies 'n bieer"
+
+msgid "enter_bid_amount"
+msgstr "Voer 'n bie bedrag in"
+
+msgid "add_bid"
+msgstr "Voeg bie by"
+
+msgid "err_bidder_out_of_range"
+msgstr "Fout. Die bieer is buite die bereik van die lot"
+
+msgid "err_no_bid"
+msgstr "Fout. Geen bie ingevoer nie"
+
+msgid "closed"
+msgstr "gesluit"
+
+msgid "select_lot_from_list"
+msgstr "Kies 'n lot van die lys"
+
+msgid "pick_lot"
+msgstr "Kies 'n lot"
+
+msgid "select"
+msgstr "Kies"
+
+msgid "err_no_current_auction"
+msgstr "Maak asseblief 'n veiling oop of skep 'n nuwe een."
 
 msgid "yes"
 msgstr "Ja"

@@ -1,3 +1,4 @@
+#  msgfmt -o translations/en/LC_MESSAGES/auction.mo translations/en/LC_MESSAGES/auction.po
 msgid "test_str"
 msgstr "This is english"
 
@@ -73,7 +74,7 @@ msgstr "Close lot"
 msgid "btn_next_lot"
 msgstr "Next lot"
 
-msgid "btn_select_lot"
+msgid "select_lot"
 msgstr "Select lot"
 
 msgid "end_goal"
@@ -84,6 +85,141 @@ msgstr "Close"
 
 msgid "close_confirm"
 msgstr "Are you sure you want to close the program?"
+
+msgid "confirmation"
+msgstr "Confirmation"
+
+msgid "error"
+msgstr "Error"
+
+msgid "err_no_auction"
+msgstr "No auction to save"
+
+msgid "save_header"
+msgstr "Save file"
+
+msgid "save_success"
+msgstr "File saved successfully"
+
+msgid "err_no_file"
+msgstr "No file selected"
+
+msgid "err_wrong_format"
+msgstr "Selected file is not an Excel file"
+
+msgid "err_reading"
+msgstr "An error occurred while reading the file"
+
+msgid "err_no_auction_data"
+msgstr "The selected file does not contain auction data"
+
+msgid "save_confirmation"
+msgstr "Would you like to save the current auction? All unsaved changes will be lost."
+
+msgid "new_auction"
+msgstr "New auction"    
+
+msgid "new_auction_name"
+msgstr "Enter a new auction name"
+
+msgid "new_auction_goal"
+msgstr "Enter a new goal in R"
+
+msgid "err_name_empty"
+msgstr "Name cannot be empty"
+
+msgid "err_name_default"
+msgstr "Name cannot be the default name"
+
+msgid "err_name_exists"
+msgstr "Name already exists"
+
+msgid "mult_bidders_header"
+msgstr "Add multiple bidders"
+
+msgid "mult_bidders_instr1"
+msgstr "Enter the amount of bidders you would like to add. They will be named \""
+
+msgid "mult_bidders_instr2"
+msgstr " [number]\" starting from number = "
+
+msgid "err_name_exists1"
+msgstr "Error. Name: \""
+
+msgid "err_name_exists2"
+msgstr "\" exists"
+
+msgid "curr_bidders"
+msgstr "Current bidders "
+
+msgid "none"
+msgstr "None"
+
+msgid "mult_lots_header"
+msgstr "Add multiple lots"
+
+msgid "mult_lots_instr1"
+msgstr "Enter the amount of lots you would like to add. They will be named \""
+
+msgid "mult_lots_instr2"
+msgstr " [number]\" starting from number = "
+
+msgid "curr_lots"
+msgstr "Current lots "
+
+msgid "err_nan"
+msgstr "Error. Not a valid number"
+
+msgid "err_no_amount"
+msgstr "Error. No amount entered"
+
+msgid "err_neg_amount"
+msgstr "Error. Negative amount entered"
+
+msgid "err_no_bidder"
+msgstr "Error. No bidder selected"
+
+msgid "err_no_lot"
+msgstr "Error. No lot selected"
+
+msgid "err_lot_out_of_range"
+msgstr "Error. Lot is out of range"
+
+msgid "err_bid_too_low"
+msgstr "Error. Bid is too low"
+
+msgid "select_bidder_from_list"
+msgstr "Select a bidder from the list below"
+
+msgid "select_bidder"
+msgstr "Pick a bidder"
+
+msgid "enter_bid_amount"
+msgstr "Enter a bid amount"
+
+msgid "add_bid"
+msgstr "Add bid"
+
+msgid "err_bidder_out_of_range"
+msgstr "Error. Bidder is out of range"
+
+msgid "err_no_bid"
+msgstr "Error. No bid added"
+
+msgid "closed"
+msgstr "closed"
+
+msgid "select_lot_from_list"
+msgstr "Select a lot from the list below"
+
+msgid "pick_lot"
+msgstr "Pick a lot"
+
+msgid "select"
+msgstr "Select"
+
+msgid "err_no_current_auction"
+msgstr "Please open an auction file or create a new one."
 
 msgid "yes"
 msgstr "Yes"
