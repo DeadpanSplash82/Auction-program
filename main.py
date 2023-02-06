@@ -671,6 +671,49 @@ def close_lot():
     current_bidder = -1
     next_lot()
 
+
+def change_lot(index):
+    global current_auction
+    global translation
+    global current_lot
+    _ = translation.gettext
+
+    if index < 0:
+        error_box("error_no_lot_selected")
+        return
+    elif index >= len(current_auction["Lot"]):
+        error_box("error_lot_out_of_range")
+        return
+
+    current_lot = index
+    setup_auction()
+
+
+def select_lot():
+    global current_auction
+    global translation
+    global current_lot
+    _ = translation.gettext
+
+    popup = tk.Toplevel()
+    popup.title("Select Lot")
+    popup.geometry("300x200")
+    popup.resizable(False, False)
+
+    vals = current_auction["Lot"].copy()
+    for i in range(len(vals)):
+        if current_auction["Price"][i] > 0:
+            vals[i] = vals[i] + " (closed)"
+
+    lbl_lot = tk.Label(popup, text="Select a lot from the list below").grid(row=0, column=0)
+    cmb_lots = ttk.Combobox(popup, values = vals, state="readonly")
+    cmb_lots.set("Pick a Lot")
+    cmb_lots.grid(row=1, column=0)
+    cmb_lots.focus_set()    
+
+    btn_select = EButton(popup, text="Select", command=lambda: change_lot(cmb_lots.current()))
+    btn_select.grid(row=2, column=0)
+
 def setup_auction():
     clear_window()
     global root
@@ -682,7 +725,6 @@ def setup_auction():
     _ = translation.gettext
 
     frm_header = Frame(root, width=300, height=150)
-
     lbl_total_bidders_label = tk.Label(
         frm_header, text=_("total_bidders")).grid(row=0, column=0)
     lbl_total_bidders_value = tk.Label(
@@ -757,7 +799,7 @@ def setup_auction():
     if current_lot == -1 or current_lot == len(current_auction["Lot"]) - 1:
         btn_next_lot.config(state="disabled")
 
-    btn_select_lot = EButton(frm_btns, text=_("btn_select_lot"))
+    btn_select_lot = EButton(frm_btns, text=_("btn_select_lot"), command=select_lot)
     btn_select_lot.grid(row=0, column=3)
     if current_auction.empty or len(current_auction["Lot"]) == 0:
         btn_select_lot.config(state="disabled")
