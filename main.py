@@ -439,7 +439,7 @@ def setup_add_bidders():
                       command=lambda: add_bidder(ent_new_name.get()))
     btn_add.focus_set()
     btn_add.grid(row=2, column=0)
-    btn_add_mult = tk.EButton(root, text=_(
+    btn_add_mult = EButton(root, text=_(
         "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get()))
     btn_add_mult.grid(row=2, column=3)
 
@@ -679,8 +679,10 @@ def close_lot():
 
     current_auction["Price"][current_lot] = current_bid
     current_auction["Winner"][current_lot] = current_auction["Bidder"][current_bidder]
+    current_auction["Total"] += current_bid
     current_bid = -1
     current_bidder = -1
+    setup_auction()
 
 
 def change_lot(index):
@@ -799,10 +801,12 @@ def setup_auction():
     frm_btns = Frame(root, width=300, height=100)
 
     btn_new_bid = EButton(frm_btns, text=_("btn_new_bid"), command=new_bid)
-    btn_new_bid.focus_set()
+    # btn_new_bid.focus_set()
     btn_new_bid.grid(row=0, column=0)
     if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_new_bid.config(state="disabled")
+    else:
+        btn_new_bid.focus_set()
 
     btn_close_lot = EButton(frm_btns, text=_(
         "btn_close_lot"), command=close_lot)
@@ -814,6 +818,8 @@ def setup_auction():
     btn_next_lot.grid(row=0, column=2)
     if current_lot == -1 or current_lot == len(current_auction["Lot"]) - 1:
         btn_next_lot.config(state="disabled")
+    else:
+        btn_next_lot.focus_set()
 
     btn_select_lot = EButton(frm_btns, text=_(
         "btn_select_lot"), command=select_lot)
