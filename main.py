@@ -7,20 +7,39 @@ from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter import font
 from tkinter import ttk
+import matplotlib as mpl
+from matplotlib.lines import Line2D
+from matplotlib.colors import ListedColormap
+from matplotlib.ticker import FixedLocator, MaxNLocator
 import pandas as pd
 from datetime import datetime
 import re
-# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_tkagg as backend_tkagg
+import numpy as np
+import random
+import math
+import ast
 
 ####Global setup#######################################################################################################
+RED   = "\033[1;31m"
+BLUE  = "\033[1;34m"
+CYAN  = "\033[1;36m"
+GREEN = "\033[0;32m"
+RESET = "\033[0;0m"
+BOLD    = "\033[;1m"
 lang_changed = False
 root = None
 file_path = ""
 current_auction = pd.Series({})
+current_run = pd.Series({})
+bidder_map = {}
+colors = []
 current_lot = -1
 current_bidder = -1
 current_bid = -1
+
+
 
 translation = gettext.translation(
     'auction', localedir='translations', languages=['en'])
@@ -59,6 +78,7 @@ def add_menu():
 
 
 def clear_window():
+    global root
     for widget in root.winfo_children():
         widget.destroy()
     add_menu()
@@ -111,6 +131,25 @@ def error_box(message, title="Error"):
     btn_close.grid(row=1, column=1, columnspan=3)
 
 
+def generate_color():
+    global bidder_map
+    r = random.randint(0, 255) / 255
+    g = random.randint(0, 255) / 255
+    b = random.randint(0, 255) / 255
+    brightness = (r * 299 + g * 587 + b * 114) / 1000
+    if brightness > 125:
+        return generate_color()
+
+    color = (r, g, b)
+    for existing_color in bidder_map.values():
+        difference = math.sqrt((existing_color[0] - color[0])**2 + (
+            existing_color[1] - color[1])**2 + (existing_color[2] - color[2])**2)
+        if difference < 0.1:
+            return generate_color()
+
+    return color
+
+
 def confirmation_box(message, callback1=None, callback2=None, title="confirmation", button1="yes", button2="no", icon="::tk::icons::warning"):
     global root
     global translation
@@ -148,10 +187,25 @@ def confirmation_box(message, callback1=None, callback2=None, title="confirmatio
     btn_first = EButton(popup, text=_(button1),
                         command=lambda: [set_return_value(True, callback1, callback2), popup.destroy()], width=10)
     btn_first.grid(row=1, column=1)
+    btn_first.focus_set()
     if button2 is not None:
         btn_second = EButton(popup, text=_(button2),
                              command=lambda: [set_return_value(False, callback1, callback2), popup.destroy()], width=10)
         btn_second.grid(row=1, column=2)
+    
+
+
+def setup_bidder_color():
+    global bidder_map
+    global colors
+    global translation
+    _ = translation.gettext
+
+    for bidder in current_auction["Bidder"]:
+        if bidder_map.get(bidder) is None:
+            bidder_map[bidder] = generate_color()
+
+    colors = np.array([bidder_map[b] for b in current_auction["Bidder"]])
 
 
 ###Language settings##################################################################################################
@@ -212,6 +266,7 @@ def save_file(confirmed=True, callback=None):
     #     'Lot': ['Lot 1', 'Lot 2', 'Lot 3'],
     #     'Winner': ['Bidder 1', 'Bidder 2', 'Bidder 3'],
     #     'Price': [100, 200, 300]
+    #     'Runs': []
     # })
 
     # Create a new DataFrame with the arrays for Lot, Bidder, and Price as columns
@@ -238,7 +293,13 @@ def save_file(confirmed=True, callback=None):
             ("Excel Files", "*.xlsx"), ("All Files", "*.*")])
 
     # Write the result DataFrame to an Excel file
-    result_df.to_excel(file_path, index=False,)
+    result_df.to_excel(file_path, index=False, sheet_name='Auction')
+    with pd.ExcelWriter(file_path, mode='a', engine='openpyxl') as writer:
+        for run in current_auction['Runs']:
+            run.to_excel(writer, index=False,
+                        sheet_name=run["Lot"])
+    # writer.save()
+    # writer.close()
 
     messagebox.showinfo(_("save_header"), _("save_success"))
     if callback is not None:
@@ -262,16 +323,20 @@ def open_file_dialog():
 
     try:
         # Read the file and return the result
-        result_df = pd.read_excel(entered_path)
+        xl = pd.read_excel(entered_path, sheet_name=None)
     except Exception as e:
         raise ValueError(_("err_reading") + f": {e}")
+
+    if 'Auction' not in xl.keys():
+        raise ValueError(_("err_no_auction_data"))
+    result_df = xl['Auction']
 
     # Check if the file contains auction data
     if result_df.shape[1] != 9 or result_df.shape[0] < 1 or result_df.columns[0] != 'Auction_Name' or result_df.columns[1] != 'Date' or result_df.columns[2] != 'Time' or result_df.columns[3] != 'Goal' or result_df.columns[4] != 'Total' or result_df.columns[5] != 'Bidder' or result_df.columns[6] != 'Lot' or result_df.columns[7] != 'Winner' or result_df.columns[8] != 'Price':
         raise ValueError(_("err_no_auction_data"))
 
     file_path = entered_path
-    return result_df
+    return xl
 
 
 def open_confirmation():
@@ -288,17 +353,23 @@ def open_file(confirmed=True):
         return
     global current_auction
     global current_lot
+    global current_run
+    global file_path
+    global translation
+    _ = translation.gettext
 
     # Call the open_file_dialog function and get the result
     try:
-        result_df = open_file_dialog()
+        xl = open_file_dialog()
     except ValueError as e:
         error_box(str(e))
         return
     except NameError as e:
         return
 
+    # TODO add functionality for runs
     # Extract the information from the DataFrame
+    result_df = xl['Auction']
     auction_info = result_df.iloc[0, :]
     auction_bidders = result_df.iloc[1:, [5]]
     auction_lots = result_df.iloc[1:, 6:]
@@ -313,16 +384,38 @@ def open_file(confirmed=True):
         'Bidder': auction_bidders['Bidder'].dropna().to_list(),
         'Lot': auction_lots['Lot'].dropna().to_list(),
         'Winner': auction_lots['Winner'].fillna('').to_list(),
-        'Price': auction_lots['Price'].dropna().to_list()
+        'Price': auction_lots['Price'].dropna().to_list(),
+        'Runs': []
     })
+
+    # Read each sheet into a DataFrame and add it to the `current_auction["Runs"]` list
+    with pd.ExcelFile(file_path) as xls:
+        sheets = xls.sheet_names
+        for sheet in sheets:
+            if sheet == 'Auction':
+                continue
+            try:
+                df = pd.read_excel(xls, sheet_name=sheet)
+            except Exception as e:
+                 error_box(_("err_reading") + f": {e}")
+                 return
+            run = pd.Series({})
+            run["Lot"] = sheet
+            run["Bidder"] = ast.literal_eval(df.values[1][0])
+            run["Bid"] = ast.literal_eval(df.values[2][0])
+            current_auction["Runs"].append(run)
+    
+    setup_bidder_color()
 
     if len(current_auction["Lot"]) > 0:
         i = 0
         while current_auction["Winner"][i] != "" and i < len(current_auction["Lot"])-1:
             i += 1
         current_lot = i
+        current_run = current_auction["Runs"][i]
     else:
         current_lot = -1
+        current_run = pd.Series({})
     setup_auction()
 
 
@@ -345,6 +438,7 @@ def new_auction(confirmed=False, callback=None):
     global current_lot
     global current_bidder
     global current_bid
+    global current_run
     _ = translation.gettext
 
     auction_name = None
@@ -374,11 +468,13 @@ def new_auction(confirmed=False, callback=None):
         'Bidder': [],
         'Lot': [],
         'Winner': [],
-        'Price': []
+        'Price': [],
+        'Runs': []
     })
     current_lot = -1
     current_bidder = -1
     current_bid = -1
+    current_run = pd.Series({})
     setup_auction()
 
 
@@ -386,6 +482,7 @@ def new_auction(confirmed=False, callback=None):
 def add_bidder(name):
     global current_auction
     global translation
+    global bidder_map, colors
     _ = translation.gettext
 
     if name == "":
@@ -400,12 +497,16 @@ def add_bidder(name):
         return
 
     current_auction["Bidder"].append(name)
+
+    setup_bidder_color()
+
     setup_add_bidders()
 
 
 def add_multiple_bidders(base_name):
     global current_auction
     global translation
+    global bidder_map, colors
     _ = translation.gettext
 
     if base_name == "":
@@ -432,6 +533,7 @@ def add_multiple_bidders(base_name):
 
     for i in range(len(current_auction["Bidder"])+1, len(current_auction["Bidder"]) + amount + 1):
         current_auction["Bidder"].append(base_name + " " + str(i))
+        setup_bidder_color()
 
     setup_add_bidders()
 
@@ -480,6 +582,7 @@ def add_lot(name):
     global current_auction
     global translation
     global current_lot
+    global current_run
     _ = translation.gettext
 
     if name == "":
@@ -495,8 +598,10 @@ def add_lot(name):
     current_auction["Lot"].append(name)
     current_auction["Price"].append(0)
     current_auction["Winner"].append("")
+    current_auction["Runs"].append(pd.Series({"Lot": name, "Bidder": [], "Bid": []}))
     if current_lot < 0:
         current_lot = 0
+        current_run = current_auction["Runs"][current_lot]
     setup_add_lot()
 
 
@@ -504,6 +609,7 @@ def add_multiple_lots(base_name):
     global current_auction
     global translation
     global current_lot
+    global current_run
     _ = translation.gettext
 
     if base_name == "":
@@ -532,9 +638,11 @@ def add_multiple_lots(base_name):
         current_auction["Lot"].append(base_name + " " + str(i))
         current_auction["Price"].append(0)
         current_auction["Winner"].append("")
-
+        current_auction["Runs"].append(pd.Series({"Lot": base_name + " " + str(i), "Bidder": [], "Bid": []}))
+#TODO test save
     if current_lot < 0:
         current_lot = 0
+        current_run = current_auction["Runs"][current_lot]
     setup_add_lot()
 
 
@@ -563,7 +671,7 @@ def setup_add_lot():
         btn_add["state"] = "disabled"
         btn_add_mult["state"] = "disabled"
     else:
-        lbl_current_lots = tk.Label(root, text= _("curr_lots") + " (" + (
+        lbl_current_lots = tk.Label(root, text=_("curr_lots") + " (" + (
             str(len(current_auction["Lot"])) if not current_auction.empty else 0) + ") :")
         lbl_current_lots.grid(row=3, column=0)
         if len(current_auction["Lot"]) > 0:
@@ -583,6 +691,7 @@ def add_bid(amount, bidder):
     global current_bidder
     global current_lot
     global current_bid
+    global current_run
     _ = translation.gettext
 
     try:
@@ -596,7 +705,7 @@ def add_bid(amount, bidder):
     elif float(amount) <= 0:
         error_box(_("err_neg_amount"))
         return
-    #TODO add translations for bidder
+    # TODO add translations for bidder
     elif bidder == "Pick a Bidder":
         error_box(_("err_no_bidder"))
         return
@@ -618,6 +727,8 @@ def add_bid(amount, bidder):
 
     current_bidder = bidder
     current_bid = float(amount)
+    current_run["Bidder"].append(current_bidder)
+    current_run["Bid"].append(current_bid)
     setup_auction()
 
 
@@ -657,17 +768,19 @@ def next_lot():
     global current_auction
     global translation
     global current_lot
+    global current_run
     _ = translation.gettext
 
     if current_lot < 0:
         return
-
+#TODO add wraparound to next available lot
     i = current_lot+1
     while i < len(current_auction["Lot"]):
         if current_auction["Winner"][i % len(current_auction["Lot"])] == "":
             current_lot = i
             break
         i += 1
+    current_run = current_auction["Runs"][current_lot]
     setup_auction()
 
 
@@ -677,6 +790,7 @@ def close_lot():
     global current_lot
     global current_bid
     global current_bidder
+    global current_run
     _ = translation.gettext
 
     if current_lot < 0:
@@ -698,6 +812,7 @@ def close_lot():
     current_auction["Price"][current_lot] = current_bid
     current_auction["Winner"][current_lot] = current_auction["Bidder"][current_bidder]
     current_auction["Total"] += current_bid
+    current_auction["Runs"][current_lot] = current_run
     current_bid = -1
     current_bidder = -1
     setup_auction()
@@ -707,6 +822,7 @@ def change_lot(index):
     global current_auction
     global translation
     global current_lot
+    global current_run
     _ = translation.gettext
 
     if index < 0:
@@ -717,6 +833,7 @@ def change_lot(index):
         return
 
     current_lot = index
+    current_run = current_auction["Runs"][current_lot]
     setup_auction()
 
 
@@ -734,7 +851,7 @@ def select_lot():
     vals = current_auction["Lot"].copy()
     for i in range(len(vals)):
         if current_auction["Price"][i] > 0:
-            vals[i] = vals[i] + " ("+ _("closed") +")"
+            vals[i] = vals[i] + " (" + _("closed") + ")"
 
     lbl_lot = tk.Label(popup, text=_("select_lot_from_list")).grid(
         row=0, column=0)
@@ -747,6 +864,7 @@ def select_lot():
                          command=lambda: change_lot(cmb_lots.current()))
     btn_select.grid(row=2, column=0)
 
+# TODO add check to ensure user cannot move to different lot while current lot is not closed
 
 def setup_auction():
     clear_window()
@@ -756,6 +874,8 @@ def setup_auction():
     global current_bidder
     global current_lot
     global current_bid
+    global current_run
+    global bidder_map, colors
     _ = translation.gettext
 
     frm_header = Frame(root, width=300, height=150)
@@ -791,27 +911,33 @@ def setup_auction():
 
     frm_graph = Frame(root, width=300, height=250)
 
-    canvas = Canvas(frm_graph, bg='white', width=300, height=300)
+    if not current_run.empty:
+        # create the figure and axis objects
+        fig, ax = plt.subplots()
+        if current_run["Bid"] and current_run["Bidder"]:
+            x = range(len(current_run["Bid"]))
+            y = current_run["Bid"]
+            bidder_names = []
+            # bidder_colors = []
+            for index in current_run["Bidder"]:
+                bidder_names.append(current_auction["Bidder"][index])
+                # bidder_colors.append(colors[index])
 
-    coordinates = 20, 50, 210, 230
-    arc = canvas.create_arc(coordinates, start=0, extent=250, fill="blue")
-    arc = canvas.create_arc(coordinates, start=250, extent=50, fill="red")
-    arc = canvas.create_arc(coordinates, start=300, extent=60, fill="yellow")
+            colors = np.array([bidder_map[current_auction["Bidder"][bidder]]
+                              for bidder in current_run["Bidder"]])
 
-    canvas.pack(expand=True, fill=BOTH)
+            sc = ax.scatter(x, y, c=colors)
+            ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
 
-    # create figure and axis for the graph
-    # figure = plt.figure()
-    # axis = figure.add_subplot(111)
+        ax.set_xlabel("")
+        ax.set_ylabel("Price")
+        ax.set_xticks([])
 
-    # plot some data on the axis
-    # x_data = [1, 2, 3, 4, 5]
-    # y_data = [2, 4, 6, 8, 10]
-    # axis.plot(x_data, y_data)
-
-    # create a FigureCanvasTkAgg to display the graph in the Tkinter window
-    # canvas = FigureCanvasTkAgg(figure, master=frm_graph)
-    # canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        
+        # embed the Matplotlib figure in the tkinter frame
+        canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     lbl_no_auction = tk.Label(
         root, text=_("err_no_current_auction"))
@@ -858,6 +984,7 @@ def setup_auction():
 def main():
     setup_main()
     global root
+    root.protocol("WM_DELETE_WINDOW", confirm_close)
     root.mainloop()
 
 
