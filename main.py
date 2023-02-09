@@ -31,8 +31,8 @@ BOLD    = "\033[;1m"
 lang_changed = False
 root = None
 file_path = ""
-current_auction = pd.Series({})
-current_run = pd.Series({})
+current_auction = pd.Series({}, dtype=object)
+current_run = pd.Series({}, dtype=object)
 bidder_map = {}
 colors = []
 current_lot = -1
@@ -50,7 +50,10 @@ translation.install()
 class EButton(tk.Button):
     def __init__(self, master=None, **kwargs):
         tk.Button.__init__(self, master, **kwargs)
-        self.bind("<Return>", lambda event: self.invoke())
+        try:
+            self.bind("<Return>", lambda event: self.invoke())
+        except tk.TclError:
+            pass
 
 
 def add_menu():
@@ -367,7 +370,6 @@ def open_file(confirmed=True):
     except NameError as e:
         return
 
-    # TODO add functionality for runs
     # Extract the information from the DataFrame
     result_df = xl['Auction']
     auction_info = result_df.iloc[0, :]
@@ -399,7 +401,7 @@ def open_file(confirmed=True):
             except Exception as e:
                  error_box(_("err_reading") + f": {e}")
                  return
-            run = pd.Series({})
+            run = pd.Series({}, dtype=object)
             run["Lot"] = sheet
             run["Bidder"] = ast.literal_eval(df.values[1][0])
             run["Bid"] = ast.literal_eval(df.values[2][0])
@@ -415,7 +417,7 @@ def open_file(confirmed=True):
         current_run = current_auction["Runs"][i]
     else:
         current_lot = -1
-        current_run = pd.Series({})
+        current_run = pd.Series({}, dtype=object)
     setup_auction()
 
 
@@ -474,7 +476,7 @@ def new_auction(confirmed=False, callback=None):
     current_lot = -1
     current_bidder = -1
     current_bid = -1
-    current_run = pd.Series({})
+    current_run = pd.Series({}, dtype=object)
     setup_auction()
 
 
@@ -496,6 +498,7 @@ def add_bidder(name):
         error_box(_("error_name_exists"))
         return
 
+    #TODO sanitize input
     current_auction["Bidder"].append(name)
 
     setup_bidder_color()
@@ -595,6 +598,7 @@ def add_lot(name):
         error_box(_("err_name_exists"))
         return
 
+    #TODO sanitize input
     current_auction["Lot"].append(name)
     current_auction["Price"].append(0)
     current_auction["Winner"].append("")
@@ -639,7 +643,7 @@ def add_multiple_lots(base_name):
         current_auction["Price"].append(0)
         current_auction["Winner"].append("")
         current_auction["Runs"].append(pd.Series({"Lot": base_name + " " + str(i), "Bidder": [], "Bid": []}))
-#TODO test save
+
     if current_lot < 0:
         current_lot = 0
         current_run = current_auction["Runs"][current_lot]
@@ -694,6 +698,7 @@ def add_bid(amount, bidder):
     global current_run
     _ = translation.gettext
 
+    #TODO make sure user doesn't already hold the highest bid
     try:
         float(amount)
     except ValueError:
@@ -788,7 +793,6 @@ def next_lot():
 
     if current_lot < 0:
         return
-#TODO add wraparound to next available lot
     i = current_lot+1
     while i < len(current_auction["Lot"]):
         if current_auction["Winner"][i % len(current_auction["Lot"])] == "":
@@ -879,7 +883,6 @@ def select_lot():
                          command=lambda: change_lot(cmb_lots.current()))
     btn_select.grid(row=2, column=0)
 
-# TODO add check to ensure user cannot move to different lot while current lot is not closed
 
 def setup_auction():
     clear_window()
@@ -945,7 +948,7 @@ def setup_auction():
             ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
 
         ax.set_xlabel("")
-        ax.set_ylabel("Price")
+        ax.set_ylabel("Price" + " (R)")
         ax.set_xticks([])
 
         
@@ -975,7 +978,7 @@ def setup_auction():
 
     btn_next_lot = EButton(frm_btns, text=_("btn_next_lot"), command=next_lot)
     btn_next_lot.grid(row=0, column=2)
-    if not has_next_lot():
+    if not has_next_lot() or (len(current_run["Bid"]) > 0 and current_bid != -1):
         btn_next_lot.config(state="disabled")
     else:
         btn_next_lot.focus_set()
@@ -983,7 +986,7 @@ def setup_auction():
     btn_select_lot = EButton(frm_btns, text=_(
         "select_lot"), command=select_lot)
     btn_select_lot.grid(row=0, column=3)
-    if current_auction.empty or len(current_auction["Lot"]) == 0:
+    if current_auction.empty or len(current_auction["Lot"]) == 0 or (len(current_run["Bid"]) > 0 and current_bid != -1):
         btn_select_lot.config(state="disabled")
 
     if not current_auction.empty:
