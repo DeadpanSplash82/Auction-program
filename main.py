@@ -261,6 +261,8 @@ def setup_language():
         "close"), command=popup.destroy)
     btn_close.pack()
 
+    set_bg_color(popup, "#f0f0f0")
+
 
 ###File operations#####################################################################################################
 def save_file(confirmed=True, callback=None):
@@ -504,6 +506,7 @@ def add_bidder(name):
     global bidder_map, colors
     _ = translation.gettext
 
+    name.strip()
     if name == "":
         error_box(_("err_name_empty"))
         return
@@ -515,7 +518,6 @@ def add_bidder(name):
         error_box(_("error_name_exists"))
         return
 
-    #TODO sanitize input
     current_auction["Bidder"].append(name)
 
     setup_bidder_color()
@@ -529,6 +531,7 @@ def add_multiple_bidders(base_name):
     global bidder_map, colors
     _ = translation.gettext
 
+    base_name.strip()
     if base_name == "":
         error_box(_("err_name_empty"))
         return
@@ -606,6 +609,7 @@ def add_lot(name):
     global current_run
     _ = translation.gettext
 
+    name.strip()
     if name == "":
         error_box(_("err_name_empty"))
         return
@@ -616,7 +620,6 @@ def add_lot(name):
         error_box(_("err_name_exists"))
         return
 
-    #TODO sanitize input
     current_auction["Lot"].append(name)
     current_auction["Price"].append(0)
     current_auction["Winner"].append("")
@@ -634,6 +637,7 @@ def add_multiple_lots(base_name):
     global current_run
     _ = translation.gettext
 
+    base_name.strip()
     if base_name == "":
         error_box(_("err_name_empty"))
         return
