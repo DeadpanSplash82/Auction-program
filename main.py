@@ -2,11 +2,12 @@ import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
-import gettext
 from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter import font
 from tkinter import ttk
+from ttkthemes import ThemedTk, THEMES
+import gettext
 import matplotlib as mpl
 from matplotlib.lines import Line2D
 from matplotlib.colors import ListedColormap
@@ -47,13 +48,19 @@ translation.install()
 # _ = translation.gettext
 
 
-class EButton(tk.Button):
+class EButton(ttk.Button):
     def __init__(self, master=None, **kwargs):
-        tk.Button.__init__(self, master, **kwargs)
+        ttk.Button.__init__(self, master, **kwargs)
         try:
             self.bind("<Return>", lambda event: self.invoke())
-        except tk.TclError:
+        except Exception:
             pass
+    
+    def configure(self, **kwargs):
+        if 'background' in kwargs:
+            self.config(bg=kwargs['background'])
+        else:
+            ttk.Button.configure(self, **kwargs)
 
 
 def add_menu():
@@ -97,6 +104,15 @@ def confirm_close():
     confirmation_box(translation.gettext("close_confirm"), close_window)
 
 
+def set_bg_color(parent, color=None):
+    if color is None:
+        color = parent.cget("bg")
+    for child in parent.winfo_children():
+        if not isinstance(child, EButton):
+            child.configure(background=color)
+            set_bg_color(child, color)
+
+
 def setup_main():
     global root
     global translation
@@ -104,7 +120,8 @@ def setup_main():
 
     if root is not None:
         root.destroy()
-    root = tk.Tk()
+    root = ThemedTk(themebg=True)
+    root.set_theme("scidmint")
     root.title(_("title"))
     root.geometry("500x600")
 
@@ -157,7 +174,7 @@ def confirmation_box(message, callback1=None, callback2=None, title="confirmatio
     global root
     global translation
     global return_value
-    global tk
+    global ttk
     _ = translation.gettext
 
     return_value = False
@@ -228,7 +245,7 @@ def setup_language():
     popup = tk.Toplevel()
     popup.title(translation.gettext("title"))
     popup.geometry("150x150")
-    lbl_instruction = tk.Label(
+    lbl_instruction = ttk.Label(
         popup, text=translation.gettext("lang_change_instr"))
     lbl_instruction.pack()
     # new_lang = tk.StringVar()
@@ -548,8 +565,8 @@ def setup_add_bidders():
     global current_auction
     _ = translation.gettext
 
-    lbl_new_name = tk.Label(root, text=_("new_name")).grid(row=1, column=0)
-    ent_new_name = tk.Entry(root, width=20)
+    lbl_new_name = ttk.Label(root, text=_("new_name")).grid(row=1, column=0)
+    ent_new_name = ttk.Entry(root, width=20)
     # TODO add default name str to translation
     ent_new_name.insert(0, "Enter name")
     ent_new_name.grid(row=1, column=1)
@@ -567,16 +584,17 @@ def setup_add_bidders():
         btn_add["state"] = "disabled"
         btn_add_mult["state"] = "disabled"
     else:
-        lbl_current_bidders = tk.Label(root, text=_("curr_bidders") + " (" + (
+        lbl_current_bidders = ttk.Label(root, text=_("curr_bidders") + " (" + (
             str(len(current_auction["Bidder"])) if not current_auction.empty else 0) + ") :")
         lbl_current_bidders.grid(row=3, column=0)
         if len(current_auction["Bidder"]) > 0:
+            #TODO make sure list does not exceed window size
             for i in range(len(current_auction["Bidder"])):
-                lbl_current_bidders = tk.Label(
+                lbl_current_bidders = ttk.Label(
                     root, text=current_auction["Bidder"][i])
                 lbl_current_bidders.grid(row=4+i, column=0)
         else:
-            lbl_current_bidders = tk.Label(root, text=_("none"))
+            lbl_current_bidders = ttk.Label(root, text=_("none"))
             lbl_current_bidders.grid(row=4, column=0)
 
 
@@ -656,8 +674,8 @@ def setup_add_lot():
     global translation
     _ = translation.gettext
 
-    lbl_new_lot = tk.Label(root, text=_("new_lot")).grid(row=1, column=0)
-    ent_new_lot = tk.Entry(root, width=20)
+    lbl_new_lot = ttk.Label(root, text=_("new_lot")).grid(row=1, column=0)
+    ent_new_lot = ttk.Entry(root, width=20)
     # TODO add default lot str to translation
     ent_new_lot.insert(0, "Enter lot")
     ent_new_lot.grid(row=1, column=1)
@@ -675,16 +693,17 @@ def setup_add_lot():
         btn_add["state"] = "disabled"
         btn_add_mult["state"] = "disabled"
     else:
-        lbl_current_lots = tk.Label(root, text=_("curr_lots") + " (" + (
+        lbl_current_lots = ttk.Label(root, text=_("curr_lots") + " (" + (
             str(len(current_auction["Lot"])) if not current_auction.empty else 0) + ") :")
         lbl_current_lots.grid(row=3, column=0)
         if len(current_auction["Lot"]) > 0:
+            #TODO make sure list does not exceed window size
             for i in range(len(current_auction["Lot"])):
-                lbl_current_lots = tk.Label(
+                lbl_current_lots = ttk.Label(
                     root, text=current_auction["Lot"][i])
                 lbl_current_lots.grid(row=4+i, column=0)
         else:
-            lbl_current_lots = tk.Label(root, text=_("none"))
+            lbl_current_lots = ttk.Label(root, text=_("none"))
             lbl_current_lots.grid(row=4, column=0)
 
 
@@ -750,7 +769,7 @@ def new_bid():
     popup.geometry("300x200")
     popup.resizable(False, False)
 
-    lbl_bidder = tk.Label(
+    lbl_bidder = ttk.Label(
         popup, text=_("select_bidder_from_list")).grid(row=0, column=0)
     cmb_bidders = ttk.Combobox(
         popup, values=current_auction["Bidder"], state="readonly")
@@ -758,9 +777,9 @@ def new_bid():
     cmb_bidders.grid(row=1, column=0)
     cmb_bidders.focus_set()
 
-    lbl_bid = tk.Label(popup, text=_("enter_bid_amount") + ":").grid(
+    lbl_bid = ttk.Label(popup, text=_("enter_bid_amount") + ":").grid(
         row=2, column=0)
-    ent_bid = tk.Entry(popup, width=20)
+    ent_bid = ttk.Entry(popup, width=20)
     ent_bid.insert(0, "0")
     ent_bid.grid(row=3, column=0)
 
@@ -872,7 +891,7 @@ def select_lot():
         if current_auction["Price"][i] > 0:
             vals[i] = vals[i] + " (" + _("closed") + ")"
 
-    lbl_lot = tk.Label(popup, text=_("select_lot_from_list")).grid(
+    lbl_lot = ttk.Label(popup, text=_("select_lot_from_list")).grid(
         row=0, column=0)
     cmb_lots = ttk.Combobox(popup, values=vals, state="readonly")
     cmb_lots.set(_("pick_lot"))
@@ -897,37 +916,40 @@ def setup_auction():
     _ = translation.gettext
 
     frm_header = Frame(root, width=300, height=150)
-    lbl_total_bidders_label = tk.Label(
-        frm_header, text=_("total_bidders")).grid(row=0, column=0)
-    lbl_total_bidders_value = tk.Label(
+    frm_header.configure(background=root.cget("bg"))
+    lbl_total_bidders_label = ttk.Label(
+        frm_header, text=_("total_bidders"))
+    lbl_total_bidders_label.grid(row=0, column=0)
+    lbl_total_bidders_value = ttk.Label(
         frm_header, text=len(current_auction["Bidder"]) if not current_auction.empty else "0").grid(row=0, column=1)
-    lbl_total_lots_label = tk.Label(
+    lbl_total_lots_label = ttk.Label(
         frm_header, text=_("total_lots")).grid(row=0, column=2)
-    lbl_total_lots_value = tk.Label(
+    lbl_total_lots_value = ttk.Label(
         frm_header, text=len(current_auction["Lot"]) if not current_auction.empty else "0").grid(row=0, column=3)
-    lbl_end_goal_label = tk.Label(
+    lbl_end_goal_label = ttk.Label(
         frm_header, text=_("end_goal")).grid(row=0, column=4)
-    lbl_end_goal_value = tk.Label(
+    lbl_end_goal_value = ttk.Label(
         frm_header, text=("R" + str(current_auction["Goal"])) if not current_auction.empty else "R0").grid(row=0, column=5)
 
     frm_current_info = Frame(root, width=300, height=250)
 
-    lbl_current_lot_label = tk.Label(frm_current_info, text=_("current_lot") + " " + (("(" + str(
+    lbl_current_lot_label = ttk.Label(frm_current_info, text=_("current_lot") + " " + (("(" + str(
         current_lot+1) + "/" + str(len(current_auction["Lot"])) + ")") if not current_auction.empty else "") + ":")
     lbl_current_lot_label.grid(row=1, column=0)
-    lbl_current_lot_value = tk.Label(
+    lbl_current_lot_value = ttk.Label(
         frm_current_info, text=current_auction["Lot"][current_lot] if current_lot != -1 else _("none")).grid(row=1, column=1)
 
-    lbl_current_bid_label = tk.Label(
+    lbl_current_bid_label = ttk.Label(
         frm_current_info, text=_("current_bid")).grid(row=2, column=0)
-    lbl_current_bid_value = tk.Label(
+    lbl_current_bid_value = ttk.Label(
         frm_current_info, text=("R " + str(current_bid)) if current_bid > 0 else _("none")).grid(row=2, column=1)
-    lbl_current_bidder_label = tk.Label(
+    lbl_current_bidder_label = ttk.Label(
         frm_current_info, text=_("from")).grid(row=2, column=2)
-    lbl_current_bidder_value = tk.Label(
+    lbl_current_bidder_value = ttk.Label(
         frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")).grid(row=2, column=3)
 
     frm_graph = Frame(root, width=300, height=250)
+    frm_graph.configure(background=root.cget("bg"))
 
     if not current_run.empty:
         # create the figure and axis objects
@@ -957,10 +979,11 @@ def setup_auction():
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    lbl_no_auction = tk.Label(
+    lbl_no_auction = ttk.Label(
         root, text=_("err_no_current_auction"))
 
     frm_btns = Frame(root, width=300, height=100)
+    frm_btns.configure(background=root.cget("bg"))
 
     btn_new_bid = EButton(frm_btns, text=_("btn_new_bid"), command=new_bid)
     # btn_new_bid.focus_set()
@@ -996,6 +1019,8 @@ def setup_auction():
         frm_btns.pack(expand=True, fill=BOTH)
     else:
         lbl_no_auction.pack()
+    
+    set_bg_color(root)
 
 
 ###Main program##########################################################################################################
