@@ -763,6 +763,21 @@ def new_bid():
         ent_bid.get(), cmb_bidders.current()))
     btn_add.grid(row=4, column=0)
 
+def has_next_lot():
+    global current_auction
+    global translation
+    global current_lot
+    _ = translation.gettext
+
+    if current_lot < 0 and current_auction.empty:
+        return False
+    i = current_lot+1
+    while i < len(current_auction["Lot"]):
+        if current_auction["Winner"][i % len(current_auction["Lot"])] == "":
+            return True
+        i += 1
+    return False
+
 
 def next_lot():
     global current_auction
@@ -960,7 +975,7 @@ def setup_auction():
 
     btn_next_lot = EButton(frm_btns, text=_("btn_next_lot"), command=next_lot)
     btn_next_lot.grid(row=0, column=2)
-    if current_lot == -1 or current_lot == len(current_auction["Lot"]) - 1:
+    if not has_next_lot():
         btn_next_lot.config(state="disabled")
     else:
         btn_next_lot.focus_set()
