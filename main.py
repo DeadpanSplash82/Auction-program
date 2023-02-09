@@ -41,7 +41,7 @@ current_bid = -1
 #TODO add bidder color in label under current bidder
 #TODO move buttons in add bidder & lots closer to each other
 #TODO maybe add option to delete lots and bidders?
-#TODO create Readme
+#TODO figure out how accelerator works in menu
 #TODO test with exe file (pyinstaller)
 
 translation = gettext.translation(
@@ -923,6 +923,17 @@ def setup_auction():
     global bidder_map, colors
     _ = translation.gettext
 
+    bidder_names = []
+    # bidder_colors = []
+    if not current_run.empty:
+        if current_run["Bid"] and current_run["Bidder"]:
+            for index in current_run["Bidder"]:
+                bidder_names.append(current_auction["Bidder"][index])
+                # bidder_colors.append(colors[index])
+
+            colors = np.array([bidder_map[current_auction["Bidder"][bidder]]
+                                for bidder in current_run["Bidder"]])
+
     frm_header = Frame(root, width=300, height=150)
     lbl_total_bidders_label = ttk.Label(
         frm_header, text=_("total_bidders"), font=("Tahoma", 12))
@@ -952,8 +963,13 @@ def setup_auction():
         frm_current_info, text=("R " + str(current_bid)) if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=2, column=1)
     lbl_current_bidder_label = ttk.Label(
         frm_current_info, text=_("from"), font=("Tahoma", 12)).grid(row=2, column=2)
+    if current_bidder != -1:
+        rgb = [int(round(x * 255)) for x in colors[len(colors)-1]]
+        color = "#{:02x}{:02x}{:02x}".format(*rgb)
+    else:
+        color = "black"
     lbl_current_bidder_value = ttk.Label(
-        frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=2, column=3)
+        frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, foreground=color).grid(row=2, column=3)
 
     frm_graph = Frame(root, width=300, height=250)
     frm_graph.configure(background=root.cget("bg"))
@@ -964,14 +980,6 @@ def setup_auction():
         if current_run["Bid"] and current_run["Bidder"]:
             x = range(len(current_run["Bid"]))
             y = current_run["Bid"]
-            bidder_names = []
-            # bidder_colors = []
-            for index in current_run["Bidder"]:
-                bidder_names.append(current_auction["Bidder"][index])
-                # bidder_colors.append(colors[index])
-
-            colors = np.array([bidder_map[current_auction["Bidder"][bidder]]
-                              for bidder in current_run["Bidder"]])
 
             sc = ax.scatter(x, y, c=colors)
             ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
