@@ -60,7 +60,7 @@ msgid "end_goal"
 msgstr "Einddoel: "
 
 msgid "current_lot"
-msgstr "Huidige lot: "
+msgstr "Huidige lot"
 
 msgid "current_bid"
 msgstr "Huidige bie: "

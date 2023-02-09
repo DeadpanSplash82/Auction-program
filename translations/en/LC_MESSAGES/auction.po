@@ -57,7 +57,7 @@ msgid "mnu_auction"
 msgstr "Auction"
 
 msgid "current_lot"
-msgstr "Current lot: "
+msgstr "Current lot"
 
 msgid "current_bid"
 msgstr "Current bid: "
