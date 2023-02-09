@@ -6,12 +6,9 @@ from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter import font
 from tkinter import ttk
-from ttkthemes import ThemedTk, THEMES
+from ttkthemes import ThemedTk
 import gettext
 import matplotlib as mpl
-from matplotlib.lines import Line2D
-from matplotlib.colors import ListedColormap
-from matplotlib.ticker import FixedLocator, MaxNLocator
 import pandas as pd
 from datetime import datetime
 import re
@@ -40,7 +37,12 @@ current_lot = -1
 current_bidder = -1
 current_bid = -1
 
-
+#TODO add goal something
+#TODO add bidder color in label under current bidder
+#TODO move buttons in add bidder & lots closer to each other
+#TODO maybe add option to delete lots and bidders?
+#TODO create Readme
+#TODO test with exe file (pyinstaller)
 
 translation = gettext.translation(
     'auction', localedir='translations', languages=['en'])
