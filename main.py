@@ -38,10 +38,7 @@ current_bidder = -1
 current_bid = -1
 
 #TODO add goal something
-#TODO add bidder color in label under current bidder
-#TODO move buttons in add bidder & lots closer to each other
 #TODO maybe add option to delete lots and bidders?
-#TODO figure out how accelerator works in menu
 #TODO test with exe file (pyinstaller)
 
 translation = gettext.translation(
@@ -74,8 +71,8 @@ def add_menu():
     btn_file = Menubutton(main_menu)
     menu_file = Menu(btn_file, tearoff=0)
 
-    menu_file.add_command(label=_("new_file"), command=new_file, font=("Tahoma", 12), accelerator="Ctrl+N")
-    menu_file.add_command(label=_("save_file"), command=save_file, accelerator="Ctrl+S", font=("Tahoma", 12))
+    menu_file.add_command(label=_("new_file"), command=new_file, font=("Tahoma", 12))
+    menu_file.add_command(label=_("save_file"), command=save_file, font=("Tahoma", 12))
     menu_file.add_command(label=_("open_file"), command=open_confirmation, font=("Tahoma", 12))
 
     btn_file.config(menu=menu_file)
