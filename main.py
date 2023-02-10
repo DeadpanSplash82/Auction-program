@@ -132,6 +132,11 @@ def setup_main():
     style.configure('.', font=("Tahoma", 12))
     root.style = style
 
+    for i in range(4):
+        root.grid_columnconfigure(i, weight=1)
+    # for i in range(10):
+    #     root.grid_rowconfigure(i, weight=1)
+
     add_menu()
     setup_auction()
 
@@ -951,41 +956,60 @@ def setup_auction():
                                 for bidder in current_run["Bidder"]])
 
     frm_header = Frame(root, width=300, height=150)
+    for i in range(6):
+        frm_header.grid_columnconfigure(i, weight=1)
+    for i in range(1):
+        frm_header.grid_rowconfigure(i, weight=1)
+
     lbl_total_bidders_label = ttk.Label(
         frm_header, text=_("total_bidders"), font=("Tahoma", 12))
-    lbl_total_bidders_label.grid(row=0, column=0)
+    lbl_total_bidders_label.grid(row=0, column=0, sticky=E)
     lbl_total_bidders_value = ttk.Label(
-        frm_header, text=len(current_auction["Bidder"]) if not current_auction.empty else "0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=0, column=1)
+        frm_header, text=len(current_auction["Bidder"]) if not current_auction.empty else "0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+    lbl_total_bidders_value.grid(row=0, column=1, sticky=W)
     lbl_total_lots_label = ttk.Label(
-        frm_header, text=_("total_lots"), font=("Tahoma", 12)).grid(row=0, column=2)
+        frm_header, text=_("total_lots"), font=("Tahoma", 12))
+    lbl_total_lots_label.grid(row=0, column=2, sticky=E)
     lbl_total_lots_value = ttk.Label(
-        frm_header, text=len(current_auction["Lot"]) if not current_auction.empty else "0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=0, column=3)
+        frm_header, text=len(current_auction["Lot"]) if not current_auction.empty else "0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+    lbl_total_lots_value.grid(row=0, column=3, sticky=W)
     lbl_end_goal_label = ttk.Label(
-        frm_header, text=_("end_goal"), font=("Tahoma", 12)).grid(row=0, column=4)
+        frm_header, text=_("end_goal"), font=("Tahoma", 12))
+    lbl_end_goal_label.grid(row=0, column=4, sticky=E)
     lbl_end_goal_value = ttk.Label(
-        frm_header, text=("R" + str(current_auction["Goal"])) if not current_auction.empty else "R0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=0, column=5)
+        frm_header, text=("R" + str(current_auction["Goal"])) if not current_auction.empty else "R0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+    lbl_end_goal_value.grid(row=0, column=5, sticky=W)
 
     frm_current_info = Frame(root, width=300, height=250)
+    for i in range(6):
+        frm_current_info.grid_columnconfigure(i, weight=1)
+    for i in range(3):
+        frm_current_info.grid_rowconfigure(i, weight=1)
 
     lbl_current_lot_label = ttk.Label(frm_current_info, text=_("current_lot") + " " + (("(" + str(
         current_lot+1) + "/" + str(len(current_auction["Lot"])) + ")") if not current_auction.empty else "") + ":", font=("Tahoma", 12))
-    lbl_current_lot_label.grid(row=1, column=0)
+    lbl_current_lot_label.grid(row=1, column=0, sticky=E)
     lbl_current_lot_value = ttk.Label(
-        frm_current_info, text=current_auction["Lot"][current_lot] if current_lot != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=1, column=1)
+        frm_current_info, text=current_auction["Lot"][current_lot] if current_lot != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+    lbl_current_lot_value.grid(row=1, column=1, sticky=W)
 
     lbl_current_bid_label = ttk.Label(
-        frm_current_info, text=_("current_bid"), font=("Tahoma", 12), justify=tk.LEFT).grid(row=2, column=0)
+        frm_current_info, text=_("current_bid"), font=("Tahoma", 12), justify=tk.LEFT)
+    lbl_current_bid_label.grid(row=2, column=0, sticky=E)
     lbl_current_bid_value = ttk.Label(
-        frm_current_info, text=("R " + str(current_bid)) if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT).grid(row=2, column=1)
+        frm_current_info, text=("R " + str(current_bid)) if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+    lbl_current_bid_value.grid(row=2, column=1, sticky=W)
     lbl_current_bidder_label = ttk.Label(
-        frm_current_info, text=_("from"), font=("Tahoma", 12)).grid(row=2, column=2)
+        frm_current_info, text=_("from"), font=("Tahoma", 12))
+    lbl_current_bidder_label.grid(row=2, column=2, sticky=E)
     if current_bidder != -1:
         rgb = [int(round(x * 255)) for x in colors[len(colors)-1]]
         color = "#{:02x}{:02x}{:02x}".format(*rgb)
     else:
         color = "black"
     lbl_current_bidder_value = ttk.Label(
-        frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, foreground=color).grid(row=2, column=3)
+        frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, foreground=color)
+    lbl_current_bidder_value.grid(row=2, column=3, sticky=W)
 
     frm_graph = Frame(root, width=300, height=250)
     frm_graph.configure(background=root.cget("bg"))
@@ -1015,10 +1039,12 @@ def setup_auction():
 
     frm_btns = Frame(root, width=300, height=100)
     frm_btns.configure(background=root.cget("bg"))
+    for i in range(4):
+        frm_btns.grid_columnconfigure(i, weight=1)
 
     btn_new_bid = EButton(frm_btns, text=_("btn_new_bid"), command=new_bid, font=("Tahoma", 12), width=15)
     # btn_new_bid.focus_set()
-    btn_new_bid.grid(row=0, column=0)
+    btn_new_bid.grid(row=0, column=0, sticky="we")
     if current_lot == -1 or current_auction["Winner"][current_lot] != "":
         btn_new_bid.config(state="disabled")
     else:
@@ -1026,12 +1052,12 @@ def setup_auction():
 
     btn_close_lot = EButton(frm_btns, text=_(
         "btn_close_lot"), command=close_lot, font=("Tahoma", 12), width=15)
-    btn_close_lot.grid(row=0, column=1)
+    btn_close_lot.grid(row=0, column=1, sticky="we")
     if current_lot == -1 or current_bid <= 0:
         btn_close_lot.config(state="disabled")
 
     btn_next_lot = EButton(frm_btns, text=_("btn_next_lot"), command=next_lot, font=("Tahoma", 12), width=15)
-    btn_next_lot.grid(row=0, column=2)
+    btn_next_lot.grid(row=0, column=2, sticky="we")
     if not has_next_lot() or (len(current_run["Bid"]) > 0 and current_bid != -1):
         btn_next_lot.config(state="disabled")
     else:
@@ -1039,7 +1065,7 @@ def setup_auction():
 
     btn_select_lot = EButton(frm_btns, text=_(
         "select_lot"), command=select_lot, font=("Tahoma", 12), width=15)
-    btn_select_lot.grid(row=0, column=3)
+    btn_select_lot.grid(row=0, column=3, sticky="we")
     if current_auction.empty or len(current_auction["Lot"]) == 0 or (len(current_run["Bid"]) > 0 and current_bid != -1):
         btn_select_lot.config(state="disabled")
 
