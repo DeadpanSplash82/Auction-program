@@ -131,8 +131,7 @@ def setup_main():
 
     for i in range(4):
         root.grid_columnconfigure(i, weight=1)
-    # for i in range(10):
-    #     root.grid_rowconfigure(i, weight=1)
+
 
     add_menu()
     setup_auction()
@@ -254,9 +253,6 @@ def setup_language():
     lbl_instruction = ttk.Label(
         popup, text=translation.gettext("lang_change_instr"), font=("Tahoma", 12))
     lbl_instruction.pack()
-    # new_lang = tk.StringVar()
-    # rbtn_afrikaans = tk.Radiobutton(popup, text="Afrikaans", variable=new_lang, value="af", command=set_language(new_lang)).pack()
-    # rbtn_english = tk.Radiobutton(popup, text="English", variable=new_lang, value="en", command=set_language(new_lang)).pack()
     btn_afrikaans = EButton(popup, text="Afrikaans",
                             command=lambda: [set_language("af")], font=("Tahoma", 12))
     btn_afrikaans.pack()
@@ -284,18 +280,6 @@ def save_file(confirmed=True, callback=None):
     if current_auction.empty:
         messagebox.showerror(_("error"), _("err_no_auction"))
         return
-    # current_auction = pd.Series({
-    #     'Auction_Name': 'Auction 1',
-    #     'Date': '2023-01-01',
-    #     'Time': '10:00:00',
-    #     'Goal': 1000,
-    #     'Total': 900,
-    #     'Bidder': ['Bidder 1', 'Bidder 2', 'Bidder 3', 'Bidder 4', 'Bidder 5'],
-    #     'Lot': ['Lot 1', 'Lot 2', 'Lot 3'],
-    #     'Winner': ['Bidder 1', 'Bidder 2', 'Bidder 3'],
-    #     'Price': [100, 200, 300]
-    #     'Runs': []
-    # })
 
     # Create a new DataFrame with the arrays for Lot, Bidder, and Price as columns
     bidder_df = pd.DataFrame({'Bidder': current_auction['Bidder']})
@@ -326,8 +310,6 @@ def save_file(confirmed=True, callback=None):
         for run in current_auction['Runs']:
             run.to_excel(writer, index=False,
                         sheet_name=run["Lot"])
-    # writer.save()
-    # writer.close()
 
     messagebox.showinfo(_("save_header"), _("save_success"))
     if callback is not None:
@@ -474,15 +456,16 @@ def new_auction(confirmed=False, callback=None):
             _("new_auction"), _("new_auction_name"), parent=root)
         if auction_name is None:
             return
-        if auction_name is not None or bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
+        if bool(re.match("^[a-zA-Z0-9\s]+$", auction_name.strip())):
             break
 
     goal = None
     while True:
-        goal = simpledialog.askinteger(
+        goal = simpledialog.askfloat(
             _("new_auction"), _("new_auction_goal"), parent=root)
         if goal is not None:
-            break
+            if goal > 0:
+                break
         else:
             return
 
@@ -490,7 +473,7 @@ def new_auction(confirmed=False, callback=None):
         'Auction_Name': auction_name,
         'Date': datetime.today().strftime('%Y-%m-%d'),
         'Time': datetime.today().strftime('%H-%M-%S'),
-        'Goal': goal,
+        'Goal': round(goal,2),
         'Total': 0,
         'Bidder': [],
         'Lot': [],
@@ -974,7 +957,7 @@ def setup_auction():
         frm_header, text=_("end_goal"), font=("Tahoma", 12))
     lbl_end_goal_label.grid(row=0, column=4, sticky=E)
     lbl_end_goal_value = ttk.Label(
-        frm_header, text=("R" + str(current_auction["Goal"])) if not current_auction.empty else "R0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+        frm_header, text=("R{:,.2f}".format(current_auction["Goal"])).replace(",", " ") if not current_auction.empty else "R0", font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
     lbl_end_goal_value.grid(row=0, column=5, sticky=W)
 
     frm_current_info = Frame(root, width=300, height=250)
@@ -994,7 +977,7 @@ def setup_auction():
         frm_current_info, text=_("current_bid"), font=("Tahoma", 12), justify=tk.LEFT)
     lbl_current_bid_label.grid(row=2, column=0, sticky=E)
     lbl_current_bid_value = ttk.Label(
-        frm_current_info, text=("R " + str(current_bid)) if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
+        frm_current_info, text="R{:,.2f}".format(current_bid).replace(",", " ") if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT)
     lbl_current_bid_value.grid(row=2, column=1, sticky=W)
     lbl_current_bidder_label = ttk.Label(
         frm_current_info, text=_("from"), font=("Tahoma", 12))
