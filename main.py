@@ -161,7 +161,7 @@ def generate_color():
     g = random.randint(0, 255) / 255
     b = random.randint(0, 255) / 255
     brightness = (r * 299 + g * 587 + b * 114) / 1000
-    if brightness > 125:
+    if brightness > 200:
         return generate_color()
 
     color = (r, g, b)
@@ -571,6 +571,7 @@ def setup_add_bidders():
     global root
     global translation
     global current_auction
+    global colors
     _ = translation.gettext
 
     lbl_new_name = ttk.Label(root, text=_("new_name"), font=("Tahoma", 12)).grid(row=1, column=0)
@@ -586,7 +587,7 @@ def setup_add_bidders():
     btn_add.grid(row=2, column=0)
     btn_add_mult = EButton(root, text=_(
         "btn_add_mult_bidder"), command=lambda: add_multiple_bidders(ent_new_name.get()), font=("Tahoma", 12))
-    btn_add_mult.grid(row=2, column=3)
+    btn_add_mult.grid(row=2, column=1)
 
     if current_auction.empty:
         btn_add.configure(state="disabled")
@@ -596,14 +597,26 @@ def setup_add_bidders():
             str(len(current_auction["Bidder"])) if not current_auction.empty else 0) + ") :", font=("Tahoma", 12))
         lbl_current_bidders.grid(row=3, column=0)
         if len(current_auction["Bidder"]) > 0:
-            #TODO make sure list does not exceed window size
+            colors = np.array([bidder_map[bidder]
+                                    for bidder in current_auction["Bidder"]])
+            col = 0
             for i in range(len(current_auction["Bidder"])):
+                if i % 30 == 0 and i != 0:
+                    col += 1
+                rgb = [int(round(x * 255)) for x in colors[i]]
+                fcolor = "#{:02x}{:02x}{:02x}".format(*rgb)
+                brightness = (0.2126 * colors[i][0]) + (0.7152 * colors[i][1]) + (0.0722 * colors[i][2])
+                if brightness < 0.5:
+                    bcolor = "#F2F2F2"
+                else:
+                    bcolor = "#707070"
                 lbl_current_bidders = ttk.Label(
-                    root, text=current_auction["Bidder"][i], font=("Tahoma", 10))
-                lbl_current_bidders.grid(row=4+i, column=0)
+                    root, text=current_auction["Bidder"][i], font=("Tahoma", 10), foreground=fcolor, background=bcolor)
+                lbl_current_bidders.grid(row=4+(i%30), column=col)
         else:
             lbl_current_bidders = ttk.Label(root, text=_("none"), font=("Tahoma", 10))
-            lbl_current_bidders.grid(row=4, column=0)
+            lbl_current_bidders.grid(row=4, column=col)
+        colors = []
 
 ###Add lot#############################################################################################################
 def add_lot(name):
@@ -695,7 +708,7 @@ def setup_add_lot():
     btn_add.grid(row=2, column=0)
     btn_add_mult = EButton(root, text=_(
         "btn_add_mult_lot"), command=lambda: add_multiple_lots(ent_new_lot.get()), font=("Tahoma", 12))
-    btn_add_mult.grid(row=2, column=3)
+    btn_add_mult.grid(row=2, column=1)
 
     if current_auction.empty:
         btn_add.configure(state="disabled")
@@ -706,10 +719,13 @@ def setup_add_lot():
         lbl_current_lots.grid(row=3, column=0)
         if len(current_auction["Lot"]) > 0:
             #TODO make sure list does not exceed window size
+            col = 0 
             for i in range(len(current_auction["Lot"])):
+                if i % 30 == 0 and i != 0:
+                    col += 1
                 lbl_current_lots = ttk.Label(
                     root, text=current_auction["Lot"][i], font=("Tahoma", 10))
-                lbl_current_lots.grid(row=4+i, column=0)
+                lbl_current_lots.grid(row=4+(i%30), column=col)
         else:
             lbl_current_lots = ttk.Label(root, text=_("none"), font=("Tahoma", 10))
             lbl_current_lots.grid(row=4, column=0)
