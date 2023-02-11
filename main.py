@@ -971,12 +971,11 @@ def setup_auction():
         frm_current_info, text=current_auction["Lot"][current_lot] if current_lot != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, background=BACKGROUND)
     lbl_current_lot_value.grid(row=1, column=1, sticky=W)
 
-    #TODO make it so that if lot is closed, winner and final price are shown
     lbl_current_bid_label = ttk.Label(
-        frm_current_info, text=_("current_bid"), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
+        frm_current_info, text=(_("current_bid") if current_auction.empty or current_auction["Winner"][current_lot] == "" else _("final_amount")), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
     lbl_current_bid_label.grid(row=2, column=0, sticky=E)
     lbl_current_bid_value = ttk.Label(
-        frm_current_info, text="R{:,.2f}".format(current_bid).replace(",", " ") if current_bid > 0 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, background=BACKGROUND)
+        frm_current_info, text=(("R{:,.2f}".format(current_bid).replace(",", " ") if current_bid > 0 else _("none")) if current_auction.empty or current_auction["Winner"][current_lot] == "" else "R{:,.2f}".format(current_auction["Price"][current_lot]).replace(",", " ")), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, background=BACKGROUND)
     lbl_current_bid_value.grid(row=2, column=1, sticky=W)
     lbl_current_bidder_label = ttk.Label(
         frm_current_info, text=_("from"), font=("Tahoma", 12), background=BACKGROUND)
@@ -990,11 +989,20 @@ def setup_auction():
             bcolor = BACKGROUND
         else:
             bcolor = "black"
+    elif not current_auction.empty and current_auction["Winner"][current_lot] != "":
+        bidder_index = len(colors)-1
+        rgb = [int(round(x * 255)) for x in colors[bidder_index]]
+        fcolor = "#{:02x}{:02x}{:02x}".format(*rgb)
+        brightness = (0.2126 * colors[bidder_index][0]) + (0.7152 * colors[bidder_index][1]) + (0.0722 * colors[bidder_index][2])
+        if brightness < 0.5:
+            bcolor = BACKGROUND
+        else:
+            bcolor = "black"
     else:
         fcolor = "black"
         bcolor = BACKGROUND
     lbl_current_bidder_value = ttk.Label(
-        frm_current_info, text=current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none"), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
+        frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_auction.empty or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0,0,10,0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
     lbl_current_bidder_value.grid(row=2, column=3, sticky=W)
 
     frm_graph = Frame(root, width=300, height=250)
