@@ -12,7 +12,8 @@ A simple and user-friendly auction program written in Python using tkinter.
 ## Installation
 1. Clone the repository: `https://github.com/DeadpanSplash82/auction-program.git`
 2. Install the required packages with `pip install -r requirements.txt`
-3. Run the `main.py` file to start the application.
+3. Compile the translation files with `msgfmt -o translations/en/LC_MESSAGES/auction.mo translations/en/LC_MESSAGES/auction.po` and `msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po`
+4. Run the `main.py` file to start the application.
 
 ## Usage
 1. Run the `main.py` file to start the application using the command `python main.py`.
