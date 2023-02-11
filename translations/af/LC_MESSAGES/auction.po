@@ -1,3 +1,4 @@
+#  Run the following command to generate the .mo file as stated in the README file
 #  msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po
 msgid "test_str"
 msgstr "Die is afrikaans"
@@ -56,8 +57,11 @@ msgstr "Voeg verskeie lotte by"
 msgid "mnu_auction"
 msgstr "Veiling"
 
-msgid "end_goal"
-msgstr "Einddoel: "
+msgid "total_made"
+msgstr "Totaal ingesamel "
+
+msgid "of_end_goal"
+msgstr " van die einddoel"
 
 msgid "current_lot"
 msgstr "Huidige lot"
@@ -84,7 +88,7 @@ msgid "close"
 msgstr "Sluit"
 
 msgid "close_confirm"
-msgstr "Is jy seker jy wil die program verlaat?"
+msgstr "Is jy seker jy wil die program verlaat? Alle ongestoorde data sal verlore gaan."
 
 msgid "confirmation"
 msgstr "Bevestiging"
@@ -154,6 +158,12 @@ msgstr "Huidige bieers "
 
 msgid "none"
 msgstr "Geen"
+
+msgid "enter_name"
+msgstr "Voer naam in"
+
+msgid "enter_lot"
+msgstr "Voer lot in"
 
 msgid "mult_lots_header"
 msgstr "Voeg verskeie lotte by"

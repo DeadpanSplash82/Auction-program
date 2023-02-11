@@ -1,3 +1,4 @@
+#  Run the following command to generate the .mo files for the translations as stated in the README file
 #  msgfmt -o translations/en/LC_MESSAGES/auction.mo translations/en/LC_MESSAGES/auction.po
 msgid "test_str"
 msgstr "This is english"
@@ -77,14 +78,17 @@ msgstr "Next lot"
 msgid "select_lot"
 msgstr "Select lot"
 
-msgid "end_goal"
-msgstr "End goal: "
+msgid "total_made"
+msgstr "Total made "
+
+msgid "of_end_goal"
+msgstr " of end goal"
 
 msgid "close"
 msgstr "Close"
 
 msgid "close_confirm"
-msgstr "Are you sure you want to close the program?"
+msgstr "Are you sure you want to close the program? All unsaved changes will be lost."
 
 msgid "confirmation"
 msgstr "Confirmation"
@@ -154,6 +158,12 @@ msgstr "Current bidders "
 
 msgid "none"
 msgstr "None"
+
+msgid "enter_name"
+msgstr "Enter name"
+
+msgid "enter_lot"
+msgstr "Enter lot"
 
 msgid "mult_lots_header"
 msgstr "Add multiple lots"
