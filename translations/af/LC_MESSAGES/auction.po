@@ -219,6 +219,9 @@ msgstr "Fout. Geen bie ingevoer nie"
 msgid "closed"
 msgstr "gesluit"
 
+msgid "final_amount"
+msgstr "Finale bedrag:"
+
 msgid "select_lot_from_list"
 msgstr "Kies 'n lot van die lys"
 

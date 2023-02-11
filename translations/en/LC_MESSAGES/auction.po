@@ -219,6 +219,9 @@ msgstr "Error. No bid added"
 msgid "closed"
 msgstr "closed"
 
+msgid "final_amount"
+msgstr "Final amount:"
+
 msgid "select_lot_from_list"
 msgstr "Select a lot from the list below"
 
