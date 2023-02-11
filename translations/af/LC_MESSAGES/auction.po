@@ -1,7 +1,5 @@
 #  Run the following command to generate the .mo file as stated in the README file
 #  msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po
-msgid "test_str"
-msgstr "Die is afrikaans"
 
 msgid "title"
 msgstr "Veiling program"
@@ -233,6 +231,15 @@ msgstr "Kies"
 
 msgid "err_no_current_auction"
 msgstr "Maak asseblief 'n veiling oop of skep 'n nuwe een."
+
+msgid "err_bidder_already_highest"
+msgstr "Fout. Die bieer het reeds die hoogste bie."
+
+msgid "err_close_lot"
+msgstr "Maak eers die huidige lot toe voordat jy die veiling stoor."
+
+msgid "price"
+msgstr "Prys"
 
 msgid "yes"
 msgstr "Ja"

@@ -1,7 +1,5 @@
 #  Run the following command to generate the .mo files for the translations as stated in the README file
 #  msgfmt -o translations/en/LC_MESSAGES/auction.mo translations/en/LC_MESSAGES/auction.po
-msgid "test_str"
-msgstr "This is english"
 
 msgid "title"
 msgstr "Auction program"
@@ -233,6 +231,15 @@ msgstr "Select"
 
 msgid "err_no_current_auction"
 msgstr "Please open an auction file or create a new one."
+
+msgid "err_bidder_already_highest"
+msgstr "Error. Bidder already has the highest bid."
+
+msgid "err_close_lot"
+msgstr "Close the current lot before saving the auction."
+
+msgid "price"
+msgstr "Price"
 
 msgid "yes"
 msgstr "Yes"
