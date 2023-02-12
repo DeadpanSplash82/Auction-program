@@ -1,3 +1,7 @@
 openpyxl
+tkinter
 ttkthemes
 gettext
+pandas
+matplotlib
+numpy
