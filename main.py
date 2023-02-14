@@ -92,24 +92,32 @@ def add_menu():
                           command=save_file, font=("Tahoma", 12))
     menu_file.add_command(label=_("open_file"),
                           command=open_confirmation, font=("Tahoma", 12))
-    menu_file.add_checkbutton(label=_("line_plot"),
-                              command=toggle_plot_type, font=("Tahoma", 12))
 
-    # Add the file menu to the main menu
     btn_file.config(menu=menu_file)
-    main_menu.add_cascade(label=_("file"), menu=menu_file)
 
-    # Add the other menu items
-    main_menu.add_command(label=_("mnu_auction"),
-                          command=setup_auction, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_add_bidder"),
-                          command=setup_add_bidders, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_add_lot"),
-                          command=setup_add_lot, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_lang_change"),
+    # Create the settings menu
+    btn_settings = Menubutton(main_menu)
+    menu_settings = Menu(btn_settings, tearoff=0)
+
+    # Add the settings menu items
+    menu_settings.add_command(label=_("undo_bid"),
+                          command=undo, font=("Tahoma", 12))
+    menu_settings.add_command(label=_("lang_change"),
                           command=setup_language, font=("Tahoma", 12))
-    main_menu.add_command(
-        label=_("exit"), command=confirm_close, font=("Tahoma", 12))
+    menu_settings.add_checkbutton(label=_("line_plot"),
+                              command=toggle_plot_type, font=("Tahoma", 12))
+    
+    btn_settings.config(menu=menu_settings)
+
+    # Add all menu items
+    main_menu.add_cascade(label=_("file"), menu=menu_file)
+    main_menu.add_command(label=_("auction"),
+                          command=setup_auction, font=("Tahoma", 12))
+    main_menu.add_command(label=_("add_bidder"),
+                          command=setup_add_bidders, font=("Tahoma", 12))
+    main_menu.add_command(label=_("add_lot"),
+                          command=setup_add_lot, font=("Tahoma", 12))
+    main_menu.add_cascade(label=_("settings"), menu=menu_settings)
 
     # Add the main menu to the root window
     root.config(menu=main_menu)
@@ -183,6 +191,33 @@ def generate_color():
             return generate_color()
 
     return color
+
+
+def undo():
+    global current_auction
+    global current_run
+    global current_bid
+    global current_bidder
+    global current_lot
+
+    # Check if there is a bid to undo or if the current lot has been closed
+    if current_run.empty or current_bid == -1 or current_lot == -1 or len(current_run["Bid"])==0:
+        return
+    if current_auction["Winner"][current_lot] != "":
+        return
+
+    # Remove the last bid
+    current_run["Bid"].pop()
+    current_run["Bidder"].pop()
+    if len(current_run["Bid"]) == 0:
+        current_bid = -1
+        current_bidder = -1
+    else:
+        current_bid = current_run["Bid"][len(current_run["Bid"])-1]
+        current_bidder = current_run["Bidder"][len(current_run["Bidder"])-1]
+
+    setup_auction()
+    
 
 
 def confirmation_box(message, callback1=None, callback2=None, title="confirmation", button1="yes", button2="no", icon="::tk::icons::warning"):

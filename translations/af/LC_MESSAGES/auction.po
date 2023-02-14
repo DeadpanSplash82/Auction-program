@@ -4,7 +4,7 @@
 msgid "title"
 msgstr "Veiling program"
 
-msgid "mnu_lang_change"
+msgid "lang_change"
 msgstr "Taal"
 
 msgid "file"
@@ -25,10 +25,16 @@ msgstr "Lyn grafiek"
 msgid "bidder"
 msgstr "Bieer"
 
-msgid "mnu_add_bidder"
+msgid "undo_bid"
+msgstr "Ontdoen bie"
+
+msgid "settings"
+msgstr "Verstellings"
+
+msgid "add_bidder"
 msgstr "Voeg bieer by"
 
-msgid "mnu_add_lot"
+msgid "add_lot"
 msgstr "Voeg lot by"
 
 msgid "lang_change_instr"
@@ -58,7 +64,7 @@ msgstr "Voeg lot by"
 msgid "btn_add_mult_lot"
 msgstr "Voeg verskeie lotte by"
 
-msgid "mnu_auction"
+msgid "auction"
 msgstr "Veiling"
 
 msgid "total_made"
