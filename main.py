@@ -1118,7 +1118,7 @@ def setup_auction():
         frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_lot==-1 or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
     lbl_current_bidder_value.grid(row=2, column=3, sticky=W)
 
-    # Create the graph frame
+        # Create the graph frame
     frm_graph = Frame(root, width=300, height=250)
     frm_graph.configure(background=root.cget("bg"))
 
@@ -1126,21 +1126,49 @@ def setup_auction():
         # Create the figure and axis objects
         fig, ax = plt.subplots()
         if current_run["Bid"] and current_run["Bidder"]:
-            # Create the scatter plot if there is current_run data to plot
+            # Create the bar graph if there is current_run data to plot
             x = range(len(current_run["Bid"]))
             y = current_run["Bid"]
-            sc = ax.scatter(x, y, c=colors)
-            ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
+            ax.bar(x, y, color=colors)
+            bidder_names = []
+            for index in current_run["Bidder"]:
+                bidder_names.append(current_auction["Bidder"][index])
+        
+            ax.set_xticklabels(bidder_names) # set x-axis labels to bidder names
 
         # Set the axis labels and ticks even if there is no data to plot
-        ax.set_xlabel("")
+        ax.set_xlabel("bidder")
         ax.set_ylabel(_("price") + " (R)")
-        ax.set_xticks([])
+        ax.set_xticks(range(len(current_run["Bid"])))
 
         # Embed the Matplotlib figure in the tkinter frame
         canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # # Create the graph frame
+    # frm_graph = Frame(root, width=300, height=250)
+    # frm_graph.configure(background=root.cget("bg"))
+
+    # if not current_run.empty:
+    #     # Create the figure and axis objects
+    #     fig, ax = plt.subplots()
+    #     if current_run["Bid"] and current_run["Bidder"]:
+    #         # Create the scatter plot if there is current_run data to plot
+    #         x = range(len(current_run["Bid"]))
+    #         y = current_run["Bid"]
+    #         sc = ax.scatter(x, y, c=colors)
+    #         ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
+
+    #     # Set the axis labels and ticks even if there is no data to plot
+    #     ax.set_xlabel("")
+    #     ax.set_ylabel(_("price") + " (R)")
+    #     ax.set_xticks([])
+
+    #     # Embed the Matplotlib figure in the tkinter frame
+    #     canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)
+    #     canvas.draw()
+    #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     # Create the buttons frame
     frm_btns = Frame(root, width=300, height=100)
