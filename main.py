@@ -18,6 +18,7 @@ import numpy as np
 import random
 import math
 import ast
+import warnings
 
 #### Global setup #######################################################################################################
 RED = "\033[1;31m"
@@ -36,6 +37,7 @@ colors = []
 current_lot = -1
 current_bidder = -1
 current_bid = -1
+plot_type = "bar"
 
 
 # Set the default language to english
@@ -61,6 +63,16 @@ class EButton(tk.Button):
             tk.Button.configure(self, **kwargs)
 
 
+def toggle_plot_type():
+    global plot_type
+    if plot_type == "bar":
+        plot_type = "scatter"
+    else:
+        plot_type = "bar"
+
+    setup_auction()
+
+
 def add_menu():
     global root
     global translation
@@ -80,6 +92,8 @@ def add_menu():
                           command=save_file, font=("Tahoma", 12))
     menu_file.add_command(label=_("open_file"),
                           command=open_confirmation, font=("Tahoma", 12))
+    menu_file.add_checkbutton(label=_("line_plot"),
+                              command=toggle_plot_type, font=("Tahoma", 12))
 
     # Add the file menu to the main menu
     btn_file.config(menu=menu_file)
@@ -1081,7 +1095,7 @@ def setup_auction():
     lbl_current_lot_value.grid(row=1, column=1, sticky=W)
 
     lbl_current_bid_label = ttk.Label(
-        frm_current_info, text=(_("current_bid") if current_lot ==-1 or current_auction["Winner"][current_lot] == "" else _("final_amount")), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
+        frm_current_info, text=(_("current_bid") if current_lot == -1 or current_auction["Winner"][current_lot] == "" else _("final_amount")), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
     lbl_current_bid_label.grid(row=2, column=0, sticky=E)
     lbl_current_bid_value = ttk.Label(
         frm_current_info, text=(("R{:,.2f}".format(current_bid).replace(",", " ") if current_bid > 0 else _("none")) if current_lot == -1 or current_auction["Winner"][current_lot] == "" else "R{:,.2f}".format(current_auction["Price"][current_lot]).replace(",", " ")), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, background=BACKGROUND)
@@ -1115,10 +1129,10 @@ def setup_auction():
         bcolor = BACKGROUND
 
     lbl_current_bidder_value = ttk.Label(
-        frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_lot==-1 or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
+        frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_lot == -1 or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
     lbl_current_bidder_value.grid(row=2, column=3, sticky=W)
 
-        # Create the graph frame
+    # Create the graph frame
     frm_graph = Frame(root, width=300, height=250)
     frm_graph.configure(background=root.cget("bg"))
 
@@ -1129,46 +1143,30 @@ def setup_auction():
             # Create the bar graph if there is current_run data to plot
             x = range(len(current_run["Bid"]))
             y = current_run["Bid"]
-            ax.bar(x, y, color=colors)
-            bidder_names = []
-            for index in current_run["Bidder"]:
-                bidder_names.append(current_auction["Bidder"][index])
-        
-            ax.set_xticklabels(bidder_names) # set x-axis labels to bidder names
+            if plot_type == "bar":
+                ax.bar(x, y, color=colors)
+                bidder_names = []
+                for index in current_run["Bidder"]:
+                    bidder_names.append(current_auction["Bidder"][index])
+                with warnings.catch_warnings():
+                    warnings.filterwarnings("ignore", category=UserWarning)
+                    ax.set_xticklabels(bidder_names)
+                ax.set_xticks(range(len(current_run["Bid"])))
+                ax.set_xlabel(_("bidder"))
+            elif plot_type == "scatter":
+                sc = ax.scatter(x, y, c=colors)
+                ax.plot(x, y, '-o', color='black',
+                        linewidth=0.25, markersize=0)
+                ax.set_xticks([])
+                ax.set_xlabel("")
 
-        # Set the axis labels and ticks even if there is no data to plot
-        ax.set_xlabel("bidder")
+        # Set the y-axis label even if there is no data to plot
         ax.set_ylabel(_("price") + " (R)")
-        ax.set_xticks(range(len(current_run["Bid"])))
 
         # Embed the Matplotlib figure in the tkinter frame
         canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-    # # Create the graph frame
-    # frm_graph = Frame(root, width=300, height=250)
-    # frm_graph.configure(background=root.cget("bg"))
-
-    # if not current_run.empty:
-    #     # Create the figure and axis objects
-    #     fig, ax = plt.subplots()
-    #     if current_run["Bid"] and current_run["Bidder"]:
-    #         # Create the scatter plot if there is current_run data to plot
-    #         x = range(len(current_run["Bid"]))
-    #         y = current_run["Bid"]
-    #         sc = ax.scatter(x, y, c=colors)
-    #         ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
-
-    #     # Set the axis labels and ticks even if there is no data to plot
-    #     ax.set_xlabel("")
-    #     ax.set_ylabel(_("price") + " (R)")
-    #     ax.set_xticks([])
-
-    #     # Embed the Matplotlib figure in the tkinter frame
-    #     canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)
-    #     canvas.draw()
-    #     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     # Create the buttons frame
     frm_btns = Frame(root, width=300, height=100)

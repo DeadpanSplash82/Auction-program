@@ -1,4 +1,4 @@
-#  Run the following command to generate the .mo file as stated in the README file
+#  Run the following command to generate the .mo file for the translations if this file is changed
 #  msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po
 
 msgid "title"
@@ -18,6 +18,12 @@ msgstr "Stoor leer"
 
 msgid "new_file"
 msgstr "Nuwe leer"
+
+msgid "line_plot"
+msgstr "Lyn grafiek"
+
+msgid "bidder"
+msgstr "Bieer"
 
 msgid "mnu_add_bidder"
 msgstr "Voeg bieer by"
