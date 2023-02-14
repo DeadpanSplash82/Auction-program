@@ -365,11 +365,13 @@ def open_file_dialog():
 
 def open_confirmation():
     global current_auction
+    global translation
+    _ = translation.gettext
 
     # If there is an auction open, ask the user if they want to save it
     if not current_auction.empty:
         confirmation_box(
-            "save_confirmation", callback1=save_file, callback2=open_file)
+            _("save_confirmation"), callback1=save_file, callback2=open_file)
     else:
         open_file(True)
 
