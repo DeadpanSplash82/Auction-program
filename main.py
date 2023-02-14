@@ -18,6 +18,7 @@ import numpy as np
 import random
 import math
 import ast
+import warnings
 
 #### Global setup #######################################################################################################
 RED = "\033[1;31m"
@@ -36,6 +37,7 @@ colors = []
 current_lot = -1
 current_bidder = -1
 current_bid = -1
+plot_type = "bar"
 
 
 # Set the default language to english
@@ -61,6 +63,16 @@ class EButton(tk.Button):
             tk.Button.configure(self, **kwargs)
 
 
+def toggle_plot_type():
+    global plot_type
+    if plot_type == "bar":
+        plot_type = "scatter"
+    else:
+        plot_type = "bar"
+
+    setup_auction()
+
+
 def add_menu():
     global root
     global translation
@@ -81,21 +93,31 @@ def add_menu():
     menu_file.add_command(label=_("open_file"),
                           command=open_confirmation, font=("Tahoma", 12))
 
-    # Add the file menu to the main menu
     btn_file.config(menu=menu_file)
-    main_menu.add_cascade(label=_("file"), menu=menu_file)
 
-    # Add the other menu items
-    main_menu.add_command(label=_("mnu_auction"),
-                          command=setup_auction, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_add_bidder"),
-                          command=setup_add_bidders, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_add_lot"),
-                          command=setup_add_lot, font=("Tahoma", 12))
-    main_menu.add_command(label=_("mnu_lang_change"),
+    # Create the settings menu
+    btn_settings = Menubutton(main_menu)
+    menu_settings = Menu(btn_settings, tearoff=0)
+
+    # Add the settings menu items
+    menu_settings.add_command(label=_("undo_bid"),
+                          command=undo, font=("Tahoma", 12))
+    menu_settings.add_command(label=_("lang_change"),
                           command=setup_language, font=("Tahoma", 12))
-    main_menu.add_command(
-        label=_("exit"), command=confirm_close, font=("Tahoma", 12))
+    menu_settings.add_checkbutton(label=_("line_plot"),
+                              command=toggle_plot_type, font=("Tahoma", 12))
+    
+    btn_settings.config(menu=menu_settings)
+
+    # Add all menu items
+    main_menu.add_cascade(label=_("file"), menu=menu_file)
+    main_menu.add_command(label=_("auction"),
+                          command=setup_auction, font=("Tahoma", 12))
+    main_menu.add_command(label=_("add_bidder"),
+                          command=setup_add_bidders, font=("Tahoma", 12))
+    main_menu.add_command(label=_("add_lot"),
+                          command=setup_add_lot, font=("Tahoma", 12))
+    main_menu.add_cascade(label=_("settings"), menu=menu_settings)
 
     # Add the main menu to the root window
     root.config(menu=main_menu)
@@ -169,6 +191,33 @@ def generate_color():
             return generate_color()
 
     return color
+
+
+def undo():
+    global current_auction
+    global current_run
+    global current_bid
+    global current_bidder
+    global current_lot
+
+    # Check if there is a bid to undo or if the current lot has been closed
+    if current_run.empty or current_bid == -1 or current_lot == -1 or len(current_run["Bid"])==0:
+        return
+    if current_auction["Winner"][current_lot] != "":
+        return
+
+    # Remove the last bid
+    current_run["Bid"].pop()
+    current_run["Bidder"].pop()
+    if len(current_run["Bid"]) == 0:
+        current_bid = -1
+        current_bidder = -1
+    else:
+        current_bid = current_run["Bid"][len(current_run["Bid"])-1]
+        current_bidder = current_run["Bidder"][len(current_run["Bidder"])-1]
+
+    setup_auction()
+    
 
 
 def confirmation_box(message, callback1=None, callback2=None, title="confirmation", button1="yes", button2="no", icon="::tk::icons::warning"):
@@ -1081,7 +1130,7 @@ def setup_auction():
     lbl_current_lot_value.grid(row=1, column=1, sticky=W)
 
     lbl_current_bid_label = ttk.Label(
-        frm_current_info, text=(_("current_bid") if current_lot ==-1 or current_auction["Winner"][current_lot] == "" else _("final_amount")), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
+        frm_current_info, text=(_("current_bid") if current_lot == -1 or current_auction["Winner"][current_lot] == "" else _("final_amount")), font=("Tahoma", 12), justify=tk.LEFT, background=BACKGROUND)
     lbl_current_bid_label.grid(row=2, column=0, sticky=E)
     lbl_current_bid_value = ttk.Label(
         frm_current_info, text=(("R{:,.2f}".format(current_bid).replace(",", " ") if current_bid > 0 else _("none")) if current_lot == -1 or current_auction["Winner"][current_lot] == "" else "R{:,.2f}".format(current_auction["Price"][current_lot]).replace(",", " ")), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, background=BACKGROUND)
@@ -1115,7 +1164,7 @@ def setup_auction():
         bcolor = BACKGROUND
 
     lbl_current_bidder_value = ttk.Label(
-        frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_lot==-1 or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
+        frm_current_info, text=((current_auction["Bidder"][current_bidder] if current_bidder != -1 else _("none")) if current_lot == -1 or current_auction["Winner"][current_lot] == "" else current_auction["Winner"][current_lot]), font=("Tahoma", 12, "bold"), padding=(0, 0, 10, 0), justify=tk.LEFT, foreground=fcolor, background=bcolor)
     lbl_current_bidder_value.grid(row=2, column=3, sticky=W)
 
     # Create the graph frame
@@ -1126,16 +1175,28 @@ def setup_auction():
         # Create the figure and axis objects
         fig, ax = plt.subplots()
         if current_run["Bid"] and current_run["Bidder"]:
-            # Create the scatter plot if there is current_run data to plot
+            # Create the bar graph if there is current_run data to plot
             x = range(len(current_run["Bid"]))
             y = current_run["Bid"]
-            sc = ax.scatter(x, y, c=colors)
-            ax.plot(x, y, '-o', color='black', linewidth=0.25, markersize=0)
+            if plot_type == "bar":
+                ax.bar(x, y, color=colors)
+                bidder_names = []
+                for index in current_run["Bidder"]:
+                    bidder_names.append(current_auction["Bidder"][index])
+                with warnings.catch_warnings():
+                    warnings.filterwarnings("ignore", category=UserWarning)
+                    ax.set_xticklabels(bidder_names)
+                ax.set_xticks(range(len(current_run["Bid"])))
+                ax.set_xlabel(_("bidder"))
+            elif plot_type == "scatter":
+                sc = ax.scatter(x, y, c=colors)
+                ax.plot(x, y, '-o', color='black',
+                        linewidth=0.25, markersize=0)
+                ax.set_xticks([])
+                ax.set_xlabel("")
 
-        # Set the axis labels and ticks even if there is no data to plot
-        ax.set_xlabel("")
+        # Set the y-axis label even if there is no data to plot
         ax.set_ylabel(_("price") + " (R)")
-        ax.set_xticks([])
 
         # Embed the Matplotlib figure in the tkinter frame
         canvas = backend_tkagg.FigureCanvasTkAgg(fig, master=frm_graph)

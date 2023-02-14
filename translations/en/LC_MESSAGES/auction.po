@@ -1,4 +1,4 @@
-#  Run the following command to generate the .mo files for the translations as stated in the README file
+#  Run the following command to generate the .mo files for the translations if this file is changed
 #  msgfmt -o translations/en/LC_MESSAGES/auction.mo translations/en/LC_MESSAGES/auction.po
 
 msgid "title"
@@ -16,13 +16,25 @@ msgstr "Save File"
 msgid "new_file"
 msgstr "New File"
 
-msgid "mnu_lang_change"
+msgid "line_plot"
+msgstr "Line graph"
+
+msgid "bidder"
+msgstr "Bidder"
+
+msgid "undo_bid"
+msgstr "Undo bid"
+
+msgid "settings"
+msgstr "Settings"
+
+msgid "lang_change"
 msgstr "Language"
 
-msgid "mnu_add_bidder"
+msgid "add_bidder"
 msgstr "Add bidder"
 
-msgid "mnu_add_lot"
+msgid "add_lot"
 msgstr "Add lot"
 
 msgid "lang_change_instr"
@@ -52,7 +64,7 @@ msgstr "Add lot"
 msgid "btn_add_mult_lot"
 msgstr "Add multiple lots"
 
-msgid "mnu_auction"
+msgid "auction"
 msgstr "Auction"
 
 msgid "current_lot"

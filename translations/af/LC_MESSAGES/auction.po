@@ -1,10 +1,10 @@
-#  Run the following command to generate the .mo file as stated in the README file
+#  Run the following command to generate the .mo file for the translations if this file is changed
 #  msgfmt -o translations/af/LC_MESSAGES/auction.mo translations/af/LC_MESSAGES/auction.po
 
 msgid "title"
 msgstr "Veiling program"
 
-msgid "mnu_lang_change"
+msgid "lang_change"
 msgstr "Taal"
 
 msgid "file"
@@ -19,10 +19,22 @@ msgstr "Stoor leer"
 msgid "new_file"
 msgstr "Nuwe leer"
 
-msgid "mnu_add_bidder"
+msgid "line_plot"
+msgstr "Lyn grafiek"
+
+msgid "bidder"
+msgstr "Bieer"
+
+msgid "undo_bid"
+msgstr "Ontdoen bie"
+
+msgid "settings"
+msgstr "Verstellings"
+
+msgid "add_bidder"
 msgstr "Voeg bieer by"
 
-msgid "mnu_add_lot"
+msgid "add_lot"
 msgstr "Voeg lot by"
 
 msgid "lang_change_instr"
@@ -52,7 +64,7 @@ msgstr "Voeg lot by"
 msgid "btn_add_mult_lot"
 msgstr "Voeg verskeie lotte by"
 
-msgid "mnu_auction"
+msgid "auction"
 msgstr "Veiling"
 
 msgid "total_made"
